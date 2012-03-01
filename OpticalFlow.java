@@ -33,9 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import plugins.adufour.ezplug.*;
-import plugins.adufour.filtering.Convolution1D;
-import plugins.adufour.filtering.Kernels1D;
-import plugins.adufour.filtering.FilterToolbox.Axis;
 import icy.sequence.Sequence;
 import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
@@ -61,7 +58,6 @@ public class OpticalFlow extends EzPlug implements Painter
 {
 	public EzVarSequence inputSelector = new EzVarSequence("Input");
 	public EzVarInteger	channelSelector	= new EzVarInteger("Channel");
-	public EzVarBoolean inPlaceSelector	= new EzVarBoolean("In-place", false);
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
 	public EzVarInteger	resolutionSelector = new EzVarInteger("Resolution");
 	public EzVarDouble alphaSelector = new EzVarDouble("Regularization param.");
@@ -74,8 +70,8 @@ public class OpticalFlow extends EzPlug implements Painter
 	protected void initialize()
 	{
 		resolutionSelector.setValue(10);
-		alphaSelector.setValue(50.);
-		iterSelector.setValue(500);
+		alphaSelector.setValue(100000.);
+		iterSelector.setValue(10000);
 		hideZeroVelocitiesSelector.setValue(true);
 		
 		EzVarListener<Sequence> inputListener = new EzVarListener<Sequence>()
@@ -115,7 +111,6 @@ public class OpticalFlow extends EzPlug implements Painter
 		
 		addEzComponent(inputSelector);
 		addEzComponent(channelSelector);
-		addEzComponent(inPlaceSelector);
 		addEzComponent(resolutionSelector);
 		addEzComponent(alphaSelector);
 		addEzComponent(iterSelector);
@@ -207,9 +202,9 @@ public class OpticalFlow extends EzPlug implements Painter
     	    
         	// Compute optical flow between the two frames using Horn-Schunck method.
         	double epsilon = 1e-6;
-        	
+        	int maxiter = iterSelector.getValue();
         	double alpha = alphaSelector.getValue();
-        	double[] u = HornSchunk.HornSchunkAlgorithm(I1, I2, w, h, alpha, epsilon);
+        	double[] u = HornSchunk.HornSchunkAlgorithm(I1, I2, w, h, alpha, maxiter, epsilon);
         	for (int j = 0; j<h; j++) {
         		for (int k = 0; k<w; k++) {
             		u1[j*w + k] = u[j*(w+1) + k];
@@ -594,11 +589,10 @@ public class OpticalFlow extends EzPlug implements Painter
    		//BasicStroke stroke = new BasicStroke((float) (minWidth + (maxWidth - minWidth)*flowarrow.norme/resolution));
 		BasicStroke stroke = new BasicStroke((float) 2.0);
 
-		t = Math.min(t, sequence.getSizeT() - 1);
+		t = Math.min(t, sequence.getSizeT() - 2); /* replicate flow on last image */
 		
 		if (!flowArrowList.isEmpty() && t < flowArrowList.size()) {
-			
-			ArrayList<FlowArrow> currentImageArrowList = flowArrowList.get(t);;
+			ArrayList<FlowArrow> currentImageArrowList = flowArrowList.get(t);
 			
 	   		for ( FlowArrow flowarrow : currentImageArrowList )
 	   		{
