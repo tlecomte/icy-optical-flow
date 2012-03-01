@@ -214,7 +214,7 @@ public class HornSchunk {
 		  
 		public void monitor(double r, int i) {
 			if (i%iterStep == 0) {
-				System.out.println(String.format("Iteration #%d, residue %g", i, r));
+				System.out.println(String.format("Iteration #%d, residue %.3g", i, r));
 			}
 		}
 

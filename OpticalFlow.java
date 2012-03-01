@@ -16,6 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * 
+ * @author Timothee Lecomte
+ *
+ * This plugin 
+ *
+ * TODO:
+ * Validate Horn-Schunck algorithm on middlebury sample videos
+ * Implement a more recent algorithm such as "Optical Flow in Harmony" from Zimmer et al. (2011) 
+ * 
+ */
+
 package plugins.tlecomte.opticalflow;
 
 import java.awt.BasicStroke;
@@ -42,26 +55,16 @@ import icy.gui.viewer.Viewer;
 import icy.image.IcyBufferedImage;
 import icy.painter.Painter;
 
-/**
- * 
- * @author Timothee Lecomte
- *
- * This plugin 
- *
- * TODO:
- * Validate Horn-Schunck algorithm on middlebury sample videos
- * Implement a more recent algorithm such as "Optical Flow in Harmony" from Zimmer et al. (2011) 
- * 
- */
-
 public class OpticalFlow extends EzPlug implements Painter
 {
 	public EzVarSequence inputSelector = new EzVarSequence("Input");
 	public EzVarInteger	channelSelector	= new EzVarInteger("Channel");
-	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
-	public EzVarInteger	resolutionSelector = new EzVarInteger("Resolution");
 	public EzVarDouble alphaSelector = new EzVarDouble("Regularization param.");
-	public EzVarInteger	iterSelector = new EzVarInteger("Number of iterations");
+	public EzVarInteger	iterSelector = new EzVarInteger("Max. number of iterations");
+	Double[] values = {1E-2, 1E-3, 1E-4, 1E-5, 1E-6, 1E-7, 1E-8, 1E-9, 1E-10};
+	public EzVarDouble epsilonSelector = new EzVarDouble("Iterations termination param.", values, 0 /* default index */, false /*allowUserInput*/);
+	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
+	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows");
 	public EzButton axisButton;
 	public Sequence inputSequence = null;
 	ArrayList<ArrayList<FlowArrow>> flowArrowList = new ArrayList<ArrayList<FlowArrow>>();
@@ -109,12 +112,18 @@ public class OpticalFlow extends EzPlug implements Painter
 		
 		axisButton = new EzButton("Display flow color code", axisListener);
 		
+		// sequence selection
 		addEzComponent(inputSelector);
 		addEzComponent(channelSelector);
-		addEzComponent(resolutionSelector);
+		// model parameter
 		addEzComponent(alphaSelector);
+		// computation
+		addEzComponent(epsilonSelector);
 		addEzComponent(iterSelector);
+		// display
+		addEzComponent(resolutionSelector);
 		addEzComponent(hideZeroVelocitiesSelector);
+		// display, additional
 		addEzComponent(axisButton);		
 	}
 	
@@ -172,38 +181,10 @@ public class OpticalFlow extends EzPlug implements Painter
     		double[] I1 = Array1DUtil.arrayToDoubleArray(inputSequence.getDataXY(t  , z, channel), inputSequence.isSignedDataType());
     		double[] I2 = Array1DUtil.arrayToDoubleArray(inputSequence.getDataXY(t+1, z, channel), inputSequence.isSignedDataType());
     	    
-    	    System.out.println(String.format("Images shape: Nx = %d, Ny = %d", w, h));
-        	
-//    	    double[] derivKernel = Kernels1D.GRADIENT.getData();
-//    	    double[][] I2z = {I2};
-//    	    double[][] dxI2z = new double[1][w*h];
-//    	    double[][] dyI2z = new double[1][w*h];
-//    	    Convolution1D.convolve1D(I2z, dxI2z, w, h, derivKernel, Axis.X);
-//    	    Convolution1D.convolve1D(I2z, dyI2z, w, h, derivKernel, Axis.Y);
-//    	    double[] dxI2 = dxI2z[0];
-//    	    double[] dyI2 = dyI2z[0];    
-//        	Sequence dxI2Sequence = new Sequence();
-//        	Sequence dyI2Sequence = new Sequence();
-//            dxI2Sequence.setName("dxI2");
-//            dyI2Sequence.setName("dyI2");
-//            IcyBufferedImage dxI2Image = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-//            IcyBufferedImage dyI2Image = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-//    		// Put the velocities data in output images.
-//    		Array1DUtil.doubleArrayToArray( dxI2, dxI2Image.getDataXY(0));
-//    		Array1DUtil.doubleArrayToArray( dyI2, dyI2Image.getDataXY(0));   	
-//            // notify to icy that data has changed to refresh internal state and display
-//            dxI2Image.dataChanged();
-//            dyI2Image.dataChanged();
-//            // add the new images to the sequences at a new time point
-//            dxI2Sequence.setImage(dxI2Sequence.getSizeT(), 0 /*z*/, dxI2Image);
-//            dyI2Sequence.setImage(dyI2Sequence.getSizeT(), 0 /*z*/, dyI2Image);
-//            // Create viewers to watch the velocities sequences.
-//            addSequence(dxI2Sequence);
-    	    
         	// Compute optical flow between the two frames using Horn-Schunck method.
-        	double epsilon = 1e-6;
         	int maxiter = iterSelector.getValue();
         	double alpha = alphaSelector.getValue();
+        	double epsilon = epsilonSelector.getValue();
         	double[] u = HornSchunk.HornSchunkAlgorithm(I1, I2, w, h, alpha, maxiter, epsilon);
         	for (int j = 0; j<h; j++) {
         		for (int k = 0; k<w; k++) {
