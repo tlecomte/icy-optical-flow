@@ -103,9 +103,8 @@ public class OpticalFlow extends EzPlug implements Painter
 			@Override
 			public void actionPerformed(ActionEvent event) {
 		      	// compute a separate sequence to illustrate the color code
-		      	Sequence axisSequence = new Sequence();
+		      	Sequence axisSequence = compute_coloredAxes();
 		      	axisSequence.setName("Hue Saturation color code");
-		      	compute_coloredAxes(axisSequence);
 		        addSequence(axisSequence);
 			}
 		};
@@ -146,11 +145,8 @@ public class OpticalFlow extends EzPlug implements Painter
                    MessageDialog.showDialog("Please open a sequence to use this plugin.", MessageDialog.WARNING_MESSAGE );
                    return;
         }
-        
-        // data range, is also the histogram size
-        boolean sampleSignedType = inputSequence.isSignedDataType();
 
-    	int z = 0;
+        int z = 0;
     	
     	int numT = inputSequence.getSizeT();
     	
@@ -202,19 +198,13 @@ public class OpticalFlow extends EzPlug implements Painter
     	}
     	
     	// compute a map of the velocity norm
-    	Sequence uvNormSequence = new Sequence();
-      	uvNormSequence.setName("u v velocities Norm");
-      	compute_uvNormSequence(uSequence, vSequence, sampleSignedType, uvNormSequence);
+      	FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence);
       	
       	// compute a map of the velocity angle
-      	Sequence uvAngleSequence = new Sequence();
-      	uvAngleSequence.setName("u v velocities Angle");
-      	compute_uvAngleSequence(uSequence, vSequence, sampleSignedType, uvAngleSequence);
+      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence);
       	
       	// compute a colored map of the velocity norm+angle, coded with hue and saturation
-      	Sequence uvColoredSequence = new Sequence();
-      	uvColoredSequence.setName("u v velocities (Hue Saturation color code)");
-      	compute_uvColoredSequence(uvNormSequence, uvAngleSequence, sampleSignedType, uvColoredSequence);
+      	FlowMiddlebury uvColoredSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence);
       	
         // Create viewers to watch the velocities sequences.
         //addSequence(uSequence);
@@ -246,76 +236,51 @@ public class OpticalFlow extends EzPlug implements Painter
         vSequence.setImage(vSequence.getSizeT(), 0 /*z*/, vImage);
 	}
 	
-  	void compute_uvNormSequence(Sequence uSequence, Sequence vSequence, boolean sampleSignedType, Sequence uvNormSequence) {
-  		int numT = uSequence.getSizeT();
-  		
-      	for (int i = 0; i<numT; i++) {
-    		// get frames
-        	Object uImageData = uSequence.getDataXY(i, 0 /*z*/, 0 /* channel */);
-        	Object vImageData = vSequence.getDataXY(i, 0 /*z*/, 0 /* channel */);
-        	
-    		// get frames data
-        	double[] uDataBuffer = Array1DUtil.arrayToDoubleArray(uImageData, sampleSignedType);
-        	double[] vDataBuffer = Array1DUtil.arrayToDoubleArray(vImageData, sampleSignedType);
-        	
-        	int w = uSequence.getSizeX();
-        	int h = uSequence.getSizeY();
-        	
-        	double[] uvNormDataBuffer = new double[w*h];
-        	
-        	for (int j = 0; j<w*h; j++) {
-        		uvNormDataBuffer[j] = Math.sqrt(uDataBuffer[j]*uDataBuffer[j] + vDataBuffer[j]*vDataBuffer[j]);
-        	}
-        	
-            // create the image object
-            IcyBufferedImage uvNormImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-            Object uvNormImageData = uvNormImage.getDataXY(0);
-    		// Put the velocities data in output images.
-    		Array1DUtil.doubleArrayToArray(uvNormDataBuffer, uvNormImageData);
-        	
-            // notify to icy that data has changed to refresh internal state and display
-            uvNormImage.dataChanged();
+	Sequence compute_coloredAxes() {
+		Sequence uSequence = new Sequence();
+		Sequence vSequence = new Sequence();
+		
+        // create the image object
+		int w = 100;
+		int h = w;
+        IcyBufferedImage uImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
+        IcyBufferedImage vImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
+        Object uImageData = uImage.getDataXY(0);
+        Object vImageData = vImage.getDataXY(0);
 
-            // add the new images to the sequences at a new time point
-            uvNormSequence.setImage(uvNormSequence.getSizeT(), 0 /*z*/, uvNormImage);
-      	}      		
-  	}
-  	
-  	void compute_uvAngleSequence(Sequence uSequence, Sequence vSequence, boolean sampleSignedType, Sequence uvAngleSequence) {
-  		int numT = uSequence.getSizeT();
-  		
-      	for (int i = 0; i<numT; i++) {
-    		// get frames
-        	Object uImageData = uSequence.getDataXY(i, 0 /*z*/, 0 /* channel */);
-        	Object vImageData = vSequence.getDataXY(i, 0 /*z*/, 0 /* channel */);
-        	
-    		// get frames data
-        	double[] uDataBuffer = Array1DUtil.arrayToDoubleArray(uImageData, sampleSignedType);
-        	double[] vDataBuffer = Array1DUtil.arrayToDoubleArray(vImageData, sampleSignedType);
-        	
-        	int w = uSequence.getSizeX();
-        	int h = uSequence.getSizeY();
-        	
-        	double[] uvAngleDataBuffer = new double[w*h];
-        	
-        	for (int j = 0; j<w*h; j++) {
-        		uvAngleDataBuffer[j] = Math.atan2(vDataBuffer[j], uDataBuffer[j]);
-        		if (uvAngleDataBuffer[j] < 0.) uvAngleDataBuffer[j] += Math.PI*2;
+        double[] u = new double[w*h];
+        double[] v = new double[w*h];
+        
+        for (int i=0; i<w; i++) {
+        	for (int j=0; j<h; j++) {
+        		u[j*w + i] = i - w/2;
+        		v[j*w + i] = j - h/2;
         	}
-        	
-            // create the image object
-            IcyBufferedImage uvAngleImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-            Object uvAngleImageData = uvAngleImage.getDataXY(0);
-    		// Put the velocities data in output images.
-    		Array1DUtil.doubleArrayToArray(uvAngleDataBuffer, uvAngleImageData);
-        	
-            // notify to icy that data has changed to refresh internal state and display
-            uvAngleImage.dataChanged();
+        }
+        
+		Array1DUtil.doubleArrayToArray(u, uImageData);
+		Array1DUtil.doubleArrayToArray(v, vImageData);
+		
+        // notify to icy that data has changed to refresh internal state and display
+        uImage.dataChanged();
+        vImage.dataChanged();
 
-            // add the new images to the sequences at a new time point
-            uvAngleSequence.setImage(uvAngleSequence.getSizeT(), 0 /*z*/, uvAngleImage);
-      	}      		
-  	}
+        // add the new images to the sequences at a new time point
+        uSequence.setImage(uSequence.getSizeT(), 0 /*z*/, uImage);
+        vSequence.setImage(vSequence.getSizeT(), 0 /*z*/, vImage);
+               
+		FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence);
+      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence);
+      	FlowMiddlebury axisSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence);
+      	
+      	// ask Icy core not to distort the colors
+      	for (int i=0; i<3; i++) {
+      		axisSequence.setComponentUserBoundsAutoUpdate(false);
+      		axisSequence.getColorModel().setComponentUserMinValue(i, 0.);
+      	}
+      	
+      	return axisSequence;
+	}
 	
 	void update_flow_arrows(double[] u, double[] v, int w, int h) {
    		/** number of pixel for the square containing the arrow */
@@ -381,148 +346,7 @@ public class OpticalFlow extends EzPlug implements Painter
 		flowArrowList.add( currentImageArrowList );
 	}
     
-	void compute_uvColoredSequence(Sequence uvNormSequence, Sequence uvAngleSequence, boolean sampleSignedType, Sequence uvColoredSequence) {
-		int numT = uvNormSequence.getSizeT();
-  		
-      	for (int i = 0; i<numT; i++) {
-    		// get frames
-        	Object uvNormImageData = uvNormSequence.getDataXY(i, 0 /*z*/, 0 /* channel */);
-        	Object uvAngleImageData = uvAngleSequence.getDataXY(i, 0 /*z*/, 0 /* channel */);
-        	
-    		// get frames data
-        	double[] uvNormDataBuffer = Array1DUtil.arrayToDoubleArray(uvNormImageData, sampleSignedType);
-        	double[] uvAngleDataBuffer = Array1DUtil.arrayToDoubleArray(uvAngleImageData, sampleSignedType);
-        	
-        	int w = uvNormSequence.getSizeX();
-        	int h = uvNormSequence.getSizeY();
-        	
-        	double[] uvRDataBuffer = new double[w*h];
-        	double[] uvGDataBuffer = new double[w*h];
-        	double[] uvBDataBuffer = new double[w*h];
-        	
-        	// find max norm
-        	double maxNorm = 0;
-        	for (int j = 0; j<w*h; j++) {
-        		if (maxNorm < uvNormDataBuffer[j]) maxNorm = uvNormDataBuffer[j];
-        	}
-        	
-        	for (int j = 0; j<w*h; j++) {
-        		// define HSV colors from velocities
-        		double Hue = uvAngleDataBuffer[j]; // Hue in radians, from 0 to 2*pi
-        		double Saturation = uvNormDataBuffer[j]/maxNorm; // from 0 to 1
-        		double Value = 1.; // from 0 to 1
-        		
-        		// convert to RGB
-        		// chroma
-        		double C = Value*Saturation;
-        		
-        		double H_prime = Hue / (Math.PI/3.);
-        		double X = C * (1. - Math.abs((H_prime % 2.) - 1.));
-        		double m = Value - C;
-        		
-    			if (Hue < Math.PI/3.) {
-            		uvRDataBuffer[j] = C + m;
-            		uvGDataBuffer[j] = X + m;
-            		uvBDataBuffer[j] = m;
-    			} else if (Hue < 2*Math.PI/3.) {
-            		uvRDataBuffer[j] = X + m;
-            		uvGDataBuffer[j] = C + m;
-            		uvBDataBuffer[j] = m;
-    			} else if (Hue < Math.PI) {
-            		uvRDataBuffer[j] = m;
-            		uvGDataBuffer[j] = C + m;
-            		uvBDataBuffer[j] = X + m;
-    			} else if (Hue < 4*Math.PI/3.) { 
-            		uvRDataBuffer[j] = m;
-            		uvGDataBuffer[j] = X + m;
-            		uvBDataBuffer[j] = C + m;
-    			} else if (Hue < 5*Math.PI/3.) {
-            		uvRDataBuffer[j] = X + m;
-            		uvGDataBuffer[j] = m;
-            		uvBDataBuffer[j] = C + m;
-    			} else { // Hue < 2*Math.PI
-            		uvRDataBuffer[j] = C + m;
-            		uvGDataBuffer[j] = m;
-            		uvBDataBuffer[j] = X + m;
-    			}
-        	}
-        	
-            // create the image object
-            IcyBufferedImage uvRGBImage = new IcyBufferedImage(w, h, 3 /* color! */, DataType.getDataType("double"));
-            Object uvRImageData = uvRGBImage.getDataXY(0);
-            Object uvGImageData = uvRGBImage.getDataXY(1);
-            Object uvBImageData = uvRGBImage.getDataXY(2);
-    		// Put the velocities data in output images.
-    		Array1DUtil.doubleArrayToArray(uvRDataBuffer, uvRImageData);
-    		Array1DUtil.doubleArrayToArray(uvGDataBuffer, uvGImageData);
-    		Array1DUtil.doubleArrayToArray(uvBDataBuffer, uvBImageData);
-        	
-            // notify to icy that data has changed to refresh internal state and display
-            uvRGBImage.dataChanged();
 
-            // add the new images to the sequences at a new time point
-            uvColoredSequence.setImage(uvColoredSequence.getSizeT(), 0 /*z*/, uvRGBImage);
-      	}
-      	
-      	// ask Icy core not to distort the colors
-      	for (int i=0; i<3; i++) {
-      		uvColoredSequence.setComponentUserBoundsAutoUpdate(false);
-      		uvColoredSequence.getColorModel().setComponentUserMinValue(i, 0.);
-      	}
-	}
-
-	void compute_coloredAxes(Sequence axisSequence) {
-		Sequence uSequence = new Sequence();
-		Sequence vSequence = new Sequence();
-		Sequence uvNormSequence = new Sequence();
-		Sequence uvAngleSequence = new Sequence();
-		
-        // create the image object
-		int w = 100;
-		int h = w;
-        IcyBufferedImage uImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-        IcyBufferedImage vImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-        Object uImageData = uImage.getDataXY(0);
-        Object vImageData = vImage.getDataXY(0);
-
-        double[] u = new double[w*h];
-        double[] v = new double[w*h];
-        
-        for (int i=0; i<w; i++) {
-        	for (int j=0; j<h; j++) {
-        		u[j*w + i] = i - w/2;
-        		v[j*w + i] = j - h/2;
-        	}
-        }
-        
-		Array1DUtil.doubleArrayToArray(u, uImageData);
-		Array1DUtil.doubleArrayToArray(v, vImageData);
-		
-        // notify to icy that data has changed to refresh internal state and display
-        uImage.dataChanged();
-        vImage.dataChanged();
-
-        // add the new images to the sequences at a new time point
-        uSequence.setImage(uSequence.getSizeT(), 0 /*z*/, uImage);
-        vSequence.setImage(vSequence.getSizeT(), 0 /*z*/, vImage);
-        
-        // uncomment the following lines to display intermediary images
-        //addSequence(uSequence);
-        //addSequence(vSequence);
-        //addSequence(uvNormSequence);
-        //addSequence(uvAngleSequence);
-        
-      	boolean sampleSignedType = true;
-		compute_uvNormSequence(uSequence, vSequence, sampleSignedType , uvNormSequence);
-      	compute_uvAngleSequence(uSequence, vSequence, sampleSignedType, uvAngleSequence);
-      	compute_uvColoredSequence(uvNormSequence, uvAngleSequence, sampleSignedType, axisSequence);
-      	
-      	// ask Icy core not to distort the colors
-      	for (int i=0; i<3; i++) {
-      		axisSequence.setComponentUserBoundsAutoUpdate(false);
-      		axisSequence.getColorModel().setComponentUserMinValue(i, 0.);
-      	}
-	}
 	
    	@Override
    	public void keyPressed(KeyEvent e, Point2D imagePoint, IcyCanvas canvas) {
