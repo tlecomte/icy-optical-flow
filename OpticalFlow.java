@@ -221,11 +221,10 @@ public class OpticalFlow extends EzPlug implements Painter
         // create the image object
         IcyBufferedImage uImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
         IcyBufferedImage vImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-        Object uImageData = uImage.getDataXY(0);
-        Object vImageData = vImage.getDataXY(0);
-		// Put the velocities data in output images.
-		Array1DUtil.doubleArrayToArray( u, uImageData);
-		Array1DUtil.doubleArrayToArray( v, vImageData);
+
+        // Put the velocities data in output images.
+		Array1DUtil.doubleArrayToArray( u, uImage.getDataXY(0));
+		Array1DUtil.doubleArrayToArray( v, vImage.getDataXY(0));
     	
         // notify to icy that data has changed to refresh internal state and display
         uImage.dataChanged();
