@@ -65,7 +65,7 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
 	public EzVarDouble alphaSelector = new EzVarDouble("Regularization param.");
 	public EzVarInteger	iterSelector = new EzVarInteger("Max. number of iterations");
 	Double[] values = {1E-2, 1E-3, 1E-4, 1E-5, 1E-6, 1E-7, 1E-8, 1E-9, 1E-10};
-	public EzVarDouble epsilonSelector = new EzVarDouble("Iterations termination param.", values, 0 /* default index */, false /*allowUserInput*/);
+	public EzVarDouble epsilonSelector = new EzVarDouble("Iterations termination param.", values, 2 /* default index */, false /*allowUserInput*/);
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
 	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows");
 	public EzButton axisButton;
