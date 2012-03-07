@@ -54,6 +54,9 @@ import icy.gui.dialog.MessageDialog;
 import icy.gui.viewer.Viewer;
 import icy.image.IcyBufferedImage;
 import icy.painter.Painter;
+import plugins.tlecomte.flowdisplay.FlowAngle;
+import plugins.tlecomte.flowdisplay.FlowMiddlebury;
+import plugins.tlecomte.flowdisplay.FlowNorm;
 
 public class SimpleOpticalFlow extends EzPlug implements Painter
 {

@@ -17,7 +17,7 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.simpleopticalflow;
+package plugins.tlecomte.flowdisplay;
 
 import icy.image.IcyBufferedImage;
 import icy.sequence.Sequence;
@@ -25,7 +25,7 @@ import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
 
 public class FlowMiddlebury extends Sequence {
-  	FlowMiddlebury(Sequence uvNormSequence, Sequence uvAngleSequence) {
+  	public FlowMiddlebury(Sequence uvNormSequence, Sequence uvAngleSequence) {
 		int numT = uvNormSequence.getSizeT();
   		
       	for (int i = 0; i<numT; i++) {
