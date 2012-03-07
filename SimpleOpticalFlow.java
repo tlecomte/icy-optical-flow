@@ -55,7 +55,7 @@ import icy.gui.viewer.Viewer;
 import icy.image.IcyBufferedImage;
 import icy.painter.Painter;
 
-public class OpticalFlow extends EzPlug implements Painter
+public class SimpleOpticalFlow extends EzPlug implements Painter
 {
 	public EzVarSequence inputSelector = new EzVarSequence("Input");
 	public EzVarInteger	channelSelector	= new EzVarInteger("Channel");
