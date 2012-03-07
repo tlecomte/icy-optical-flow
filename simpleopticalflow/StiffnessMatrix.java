@@ -19,6 +19,9 @@
 
 package plugins.tlecomte.simpleopticalflow;
 
+import plugins.tlecomte.fem.Element;
+import plugins.tlecomte.fem.Node;
+
 public class StiffnessMatrix {
 	public static int build_A_HS_COO(int j,
 					   				 int[] row,

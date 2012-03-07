@@ -17,7 +17,7 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.simpleopticalflow;
+package plugins.tlecomte.fem;
 
 public class Element {
 	public int index;

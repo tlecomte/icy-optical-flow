@@ -17,9 +17,9 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.simpleopticalflow;
+package plugins.tlecomte.fem;
 
-import plugins.tlecomte.simpleopticalflow.FemFunctions;
+import plugins.tlecomte.fem.FemFunctions;
 
 public class BilinearMesh {
 	
@@ -199,7 +199,7 @@ public class BilinearMesh {
         return 1; // linear mesh
     }
 
-    int nodes_per_element() {
+    public int nodes_per_element() {
         return elements[0].nodes.length;
     }
 }
