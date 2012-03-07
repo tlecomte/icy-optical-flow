@@ -17,7 +17,7 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.opticalflow;
+package plugins.tlecomte.simpleopticalflow;
 
 public class Node {
 	public int index;

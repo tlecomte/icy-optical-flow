@@ -17,7 +17,7 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.opticalflow;
+package plugins.tlecomte.simpleopticalflow;
 
 import icy.image.IcyBufferedImage;
 import icy.sequence.Sequence;

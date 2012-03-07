@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
-package plugins.tlecomte.opticalflow;
+package plugins.tlecomte.simpleopticalflow;
 
 public class fem_functions {
 	/* 1D quadratic shape function in the 1D canonical element [-1,1]

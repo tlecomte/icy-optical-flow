@@ -17,13 +17,13 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.opticalflow;
+package plugins.tlecomte.simpleopticalflow;
 
 import icy.math.ArrayMath;
 import plugins.adufour.filtering.Kernels1D;
 import plugins.adufour.filtering.Convolution1D;
 import plugins.adufour.filtering.FilterToolbox.Axis;
-import plugins.tlecomte.opticalflow.PrecomputeQuadratures;
+import plugins.tlecomte.simpleopticalflow.PrecomputeQuadratures;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.algo.solver.AbstractDoubleIterationMonitor;

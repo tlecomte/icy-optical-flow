@@ -17,9 +17,9 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.opticalflow;
+package plugins.tlecomte.simpleopticalflow;
 
-import plugins.tlecomte.opticalflow.BilinearMesh;
+import plugins.tlecomte.simpleopticalflow.BilinearMesh;
 
 public class PrecomputeQuadratures { 
 	public static double[] precompute_phi_quadratures(final BilinearMesh mesh, final double detJe) {

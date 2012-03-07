@@ -17,9 +17,9 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.opticalflow;
+package plugins.tlecomte.simpleopticalflow;
 
-import plugins.tlecomte.opticalflow.fem_functions;
+import plugins.tlecomte.simpleopticalflow.fem_functions;
 
 public class BilinearMesh {
 	
