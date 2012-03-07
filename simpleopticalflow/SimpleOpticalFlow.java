@@ -60,15 +60,24 @@ import plugins.tlecomte.flowdisplay.FlowNorm;
 
 public class SimpleOpticalFlow extends EzPlug implements Painter
 {
-	public EzVarSequence inputSelector = new EzVarSequence("Input");
+	public EzGroup inputGroup = new EzGroup("Input");
+	public EzVarSequence sequenceSelector = new EzVarSequence("Sequence");
 	public EzVarInteger	channelSelector	= new EzVarInteger("Channel");
-	public EzVarDouble alphaSelector = new EzVarDouble("Regularization param.");
-	public EzVarInteger	iterSelector = new EzVarInteger("Max. number of iterations");
+	
+	public EzGroup modelGroup = new EzGroup("Flow parameters");
+	public EzVarDouble alphaSelector = new EzVarDouble("Regularization parameter");
+	
+	public EzGroup computationGroup = new EzGroup("Computation parameters");
 	Double[] values = {1E-2, 1E-3, 1E-4, 1E-5, 1E-6, 1E-7, 1E-8, 1E-9, 1E-10};
-	public EzVarDouble epsilonSelector = new EzVarDouble("Iterations termination param.", values, 2 /* default index */, false /*allowUserInput*/);
+	public EzVarDouble epsilonSelector = new EzVarDouble("Tolerance before termination", values, 2 /* default index */, false /*allowUserInput*/);
+	public EzVarInteger	iterSelector = new EzVarInteger("Maximum number of iterations");
+	
+	public EzGroup displayGroup = new EzGroup("Display options for the vector flow overlay");
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
 	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows");
+	
 	public EzButton axisButton;
+	
 	public Sequence inputSequence = null;
 	ArrayList<ArrayList<FlowArrow>> flowArrowList = new ArrayList<ArrayList<FlowArrow>>();
 	
@@ -80,7 +89,7 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
 		iterSelector.setValue(10000);
 		hideZeroVelocitiesSelector.setValue(true);
 		
-		EzVarListener<Sequence> inputListener = new EzVarListener<Sequence>()
+		EzVarListener<Sequence> sequenceListener = new EzVarListener<Sequence>()
 		{
 			@Override
 			public void variableChanged(EzVar<Sequence> source, Sequence newSequence)
@@ -99,7 +108,7 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
 			}
 		};
 
-		inputSelector.addVarChangeListener(inputListener);
+		sequenceSelector.addVarChangeListener(sequenceListener);
 		
 		ActionListener axisListener = new ActionListener()
 		{
@@ -115,18 +124,47 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
 		axisButton = new EzButton("Display flow color code", axisListener);
 		
 		// sequence selection
-		addEzComponent(inputSelector);
+		addEzComponent(sequenceSelector);
+		sequenceSelector.setToolTipText(  "<html>Choose a sequence. The optical flow will be computed from consecutive<br>"
+										+ "frames of that sequence, in the z=0 plane.</html>");
 		addEzComponent(channelSelector);
+		channelSelector.setToolTipText("The optical flow will be computed from the data in this channel only.");
+		inputGroup.addEzComponent(sequenceSelector, channelSelector);
+		addEzComponent(inputGroup);
+		
 		// model parameter
 		addEzComponent(alphaSelector);
+		alphaSelector.setToolTipText(  "<html>Choose the value of the regularisation parameter. Choose a larger parameter<br>"
+									 + "to make the flow smoother, so that it will be more robust against noise.<br>"
+									 + "Instead, choose a smaller parameter if your flow is too uniform.</html>");
+		modelGroup.addEzComponent(alphaSelector);
+		addEzComponent(modelGroup);
+		
 		// computation
 		addEzComponent(epsilonSelector);
+		epsilonSelector.setToolTipText(  "<html>Choose the tolerance to achieve in the flow computation. The algorithm<br>"
+									   + "will terminate when the relative residue is smaller than this value.<br>"
+									   + "A tolerance of 1E-4 is a good start. Increase the tolerance to make<br>"
+									   + "the computation stop earlier, decrease it if the results is not realistic.</html>");
 		addEzComponent(iterSelector);
+		iterSelector.setToolTipText(  "<html>Choose the maximum number of iterations of the flow computation. The<br>" 
+									+ "computation will stop after this number of steps, even if the tolerance (as<br>"
+									+ "specified in the previous parameter) is not reached.</html>");
+		computationGroup.addEzComponent(epsilonSelector, iterSelector);
+		addEzComponent(computationGroup);
+		
 		// display
 		addEzComponent(resolutionSelector);
 		addEzComponent(hideZeroVelocitiesSelector);
+		hideZeroVelocitiesSelector.setToolTipText(  "<html>If checked, the very smaller flow vectors will not be<br>"
+												  + "displayed on top of the sequence, so that the visualization is clearer.</html>");
+		displayGroup.addEzComponent(resolutionSelector, hideZeroVelocitiesSelector);
+		addEzComponent(displayGroup);
+		
 		// display, additional
-		addEzComponent(axisButton);		
+		addEzComponent(axisButton);	
+		//axisButton.setToolTipText("Click here to display a reference image of the color code used" +
+		//	" to display the 2D flow.");
 	}
 	
 	@Override
@@ -139,7 +177,7 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
 		
 		super.getUI().setProgressBarMessage("Waiting...");
 		
-        inputSequence = inputSelector.getValue();
+        inputSequence = sequenceSelector.getValue();
         int channel = channelSelector.getValue();
         
         // Check if sequence exists.
