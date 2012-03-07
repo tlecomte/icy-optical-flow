@@ -18,7 +18,7 @@
  */
 package plugins.tlecomte.simpleopticalflow;
 
-public class fem_functions {
+public class FemFunctions {
 	/* 1D quadratic shape function in the 1D canonical element [-1,1]
 	 * xi is the coordinate where the function equals 1
 	 * x is the coordinate where it is evaluated

@@ -19,7 +19,7 @@
 
 package plugins.tlecomte.simpleopticalflow;
 
-import plugins.tlecomte.simpleopticalflow.fem_functions;
+import plugins.tlecomte.simpleopticalflow.FemFunctions;
 
 public class BilinearMesh {
 	
@@ -174,22 +174,22 @@ public class BilinearMesh {
     }
 
     double Nbar(int xi, double x) {
-        return fem_functions.Mbar(xi, x);
+        return FemFunctions.Mbar(xi, x);
     }
         
     double[] Nbar_1D(int xi, double[] x) {
-        return fem_functions.Mbar_1D(xi, x);
+        return FemFunctions.Mbar_1D(xi, x);
     }
         
     //def Nbar_2D(xi, x):
     //    return fem_functions.Mbar_2D(xi, x);
 
     double Nbar_prime(int xi, double x) {
-        return fem_functions.Mbar_prime(xi, x);
+        return FemFunctions.Mbar_prime(xi, x);
     }
 
     double[] Nbar_prime_1D(int xi, double[] x) {
-        return fem_functions.Mbar_prime_1D(xi, x);
+        return FemFunctions.Mbar_prime_1D(xi, x);
     }
 
     //def Nbar_prime_2D(xi, x):
