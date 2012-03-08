@@ -25,7 +25,7 @@ import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
 
 public class FlowAngle extends Sequence {
-  	public FlowAngle(Sequence uSequence, Sequence vSequence) {
+  	public FlowAngle(Sequence uSequence, Sequence vSequence, String namePrefix) {
   		int numT = uSequence.getSizeT();
   		
       	for (int i = 0; i<numT; i++) {
@@ -60,6 +60,6 @@ public class FlowAngle extends Sequence {
             setImage(getSizeT(), 0 /*z*/, uvAngleImage);
       	}
       	
-      	setName("Flow angle");
+      	setName(namePrefix + " Flow angle");
   	}
 }

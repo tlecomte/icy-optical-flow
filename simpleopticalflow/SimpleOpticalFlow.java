@@ -116,7 +116,6 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
 			public void actionPerformed(ActionEvent event) {
 		      	// compute a separate sequence to illustrate the color code
 		      	Sequence axisSequence = compute_coloredAxes();
-		      	axisSequence.setName("Hue Saturation color code");
 		        addSequence(axisSequence);
 			}
 		};
@@ -239,13 +238,13 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
     	}
     	
     	// compute a map of the velocity norm
-      	FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence);
+      	FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence, inputSequence.getName());
       	
       	// compute a map of the velocity angle
-      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence);
+      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence, inputSequence.getName());
       	
       	// compute a colored map of the velocity norm+angle, coded with hue and saturation
-      	FlowMiddlebury uvColoredSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence);
+      	FlowMiddlebury uvColoredSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence, inputSequence.getName());
       	
         // Create viewers to watch the velocities sequences.
         //addSequence(uSequence);
@@ -309,9 +308,9 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
         uSequence.setImage(uSequence.getSizeT(), 0 /*z*/, uImage);
         vSequence.setImage(vSequence.getSizeT(), 0 /*z*/, vImage);
                
-		FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence);
-      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence);
-      	FlowMiddlebury axisSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence);
+		FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence, "Reference");
+      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence, "Reference");
+      	FlowMiddlebury axisSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence, "Reference");
       	
       	// ask Icy core not to distort the colors
       	for (int i=0; i<3; i++) {

@@ -25,7 +25,7 @@ import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
 
 public class FlowMiddlebury extends Sequence {
-  	public FlowMiddlebury(Sequence uvNormSequence, Sequence uvAngleSequence) {
+  	public FlowMiddlebury(Sequence uvNormSequence, Sequence uvAngleSequence, String namePrefix) {
 		int numT = uvNormSequence.getSizeT();
   		
       	for (int i = 0; i<numT; i++) {
@@ -114,6 +114,6 @@ public class FlowMiddlebury extends Sequence {
       		getColorModel().setComponentUserMinValue(i, 0.);
       	}
       	
-      	setName("Color-coded flow");
+      	setName(namePrefix + " Color-coded flow");
 	}
 }

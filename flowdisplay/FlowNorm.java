@@ -25,7 +25,7 @@ import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
 
 public class FlowNorm extends Sequence {
-  	public FlowNorm(Sequence uSequence, Sequence vSequence) {
+  	public FlowNorm(Sequence uSequence, Sequence vSequence, String namePrefix) {
   		int numT = uSequence.getSizeT();
   		
       	for (int i = 0; i<numT; i++) {
@@ -58,7 +58,7 @@ public class FlowNorm extends Sequence {
             // add the new images to the sequences at a new time point
             setImage(getSizeT(), 0 /*z*/, uvNormImage);
             
-            setName("Flow norm");
+            setName(namePrefix + " Flow norm");
       	}      		
   	}	
 }
