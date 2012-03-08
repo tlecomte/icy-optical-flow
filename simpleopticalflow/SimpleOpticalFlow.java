@@ -31,34 +31,20 @@
 
 package plugins.tlecomte.simpleopticalflow;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Arrays;
-
 import plugins.adufour.ezplug.*;
 import icy.sequence.Sequence;
 import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
-import icy.canvas.IcyCanvas;
 import icy.gui.dialog.MessageDialog;
-import icy.gui.viewer.Viewer;
 import icy.image.IcyBufferedImage;
-import icy.painter.Painter;
 import plugins.tlecomte.flowdisplay.FlowAngle;
 import plugins.tlecomte.flowdisplay.FlowMiddlebury;
 import plugins.tlecomte.flowdisplay.FlowNorm;
 
-public class SimpleOpticalFlow extends EzPlug implements Painter
+public class SimpleOpticalFlow extends EzPlug
 {
 	public EzGroup inputGroup = new EzGroup("Input");
 	public EzVarSequence sequenceSelector = new EzVarSequence("Sequence");
@@ -79,7 +65,8 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
 	public EzButton axisButton;
 	
 	public Sequence inputSequence = null;
-	ArrayList<ArrayList<FlowArrow>> flowArrowList = new ArrayList<ArrayList<FlowArrow>>();
+	
+	VectorFlowPainter flowPainter = new VectorFlowPainter();
 	
 	@Override
 	protected void initialize()
@@ -197,7 +184,7 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
         vSequence.setName("v velocities");
         
         // clear the arrows list
-		flowArrowList.clear();
+		flowPainter.clear();
         
     	for (int t = 0; t<numT-1; t++) {
     		// get frames
@@ -232,7 +219,8 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
         	// store the results
         	add_velocities_maps_to_sequences(u1, u2, w, h, uSequence, vSequence);
         	
-        	update_flow_arrows(u1, u2, w , h);
+        	flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
+        	flowPainter.update_flow_arrows(u1, u2, w , h, resolutionSelector.getValue());
         	
         	getUI().setProgressBarValue((double) (t) / (double) (numT));
     	}
@@ -254,7 +242,7 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
         addSequence(uvColoredSequence);
 		
         // add a painter to the sequence to draw the arrows
-		inputSequence.addPainter( this );
+		inputSequence.addPainter(flowPainter);
     }
 	
 	void add_velocities_maps_to_sequences(double[] u, double[] v, int w, int h, Sequence uSequence, Sequence vSequence) {
@@ -319,168 +307,7 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
       	}
       	
       	return axisSequence;
-	}
-	
-	void update_flow_arrows(double[] u, double[] v, int w, int h) {
-   		/** number of pixel for the square containing the arrow */
-   		int resolution = resolutionSelector.getValue();		
-    	
-   		ArrayList<FlowArrow> currentImageArrowList = new ArrayList<FlowArrow>();
-   		
-		// generates arrows by averaging instant speeds over a region
-		for (int x = 0; x < w - resolution; x+=resolution)
-		{
-			for (int y = 0; y < h - resolution; y+=resolution)
-			{
-				FlowArrow flowarrow = new FlowArrow(x + resolution/2., y + resolution/2.);
-
-				flowarrow.vx = 0;
-				flowarrow.vy = 0;
-				for (int i=0; i<resolution; i++)
-				{
-					for (int j=0; j<resolution; j++)
-					{
-						int id = (y+j)*w + x + i;
-						flowarrow.vx += u[id];
-						flowarrow.vy += v[id];
-					}
-				}
-				flowarrow.vx /= Math.pow(resolution, 2);
-				flowarrow.vy /= Math.pow(resolution, 2);
-
-				currentImageArrowList.add( flowarrow );
-			}
-		}
-
-		// compute norm and angle
-		for ( FlowArrow flowarrow : currentImageArrowList )
-		{
-			flowarrow.norme = Math.sqrt( flowarrow.vx*flowarrow.vx + flowarrow.vy*flowarrow.vy);
-			flowarrow.angle = Math.atan2( flowarrow.vy , flowarrow.vx );
-		}
-
-		// normalize
-		double max = 0;
-		for ( FlowArrow flowarrow : currentImageArrowList )
-		{					
-			if ( flowarrow.norme > max ) max = flowarrow.norme ;
-		}				
-
-		if ( max > 0 )
-		{
-			for ( FlowArrow flowarrow : currentImageArrowList )
-			{					
-				double rapport =  resolution / max ;
-				flowarrow.norme *= rapport ;
-				flowarrow.vx *= rapport;
-				flowarrow.vy *= rapport;
-
-				float norme1 = (float)flowarrow.norme / (float)resolution ;
-				// flowarrow.color = new Color( norme1 , 0f , 1f - norme1 ) ;
-				flowarrow.color = new Color( norme1 , 1f , 0f ) ;
-			}
-		}
-		
-		// add the current arrow map to the global list
-		flowArrowList.add( currentImageArrowList );
-	}
-    
-
-	
-   	@Override
-   	public void keyPressed(KeyEvent e, Point2D imagePoint, IcyCanvas canvas) {
-   	}
-
-   	@Override
-   	public void keyReleased(KeyEvent e, Point2D imagePoint, IcyCanvas canvas) {
-   	}
-
-   	@Override
-   	public void mouseClick(MouseEvent e, Point2D imagePoint, IcyCanvas canvas) {
-   	}
-
-   	@Override
-   	public void mouseDrag(MouseEvent e, Point2D imagePoint, IcyCanvas canvas) {
-   	}
-
-   	@Override
-   	public void mouseMove(MouseEvent e, Point2D imagePoint, IcyCanvas canvas) {
-   	}
-
-   	@Override
-   	public void mousePressed(MouseEvent e, Point2D imagePoint, IcyCanvas canvas) {
-   	}
-
-   	@Override
-   	public void mouseReleased(MouseEvent e, Point2D imagePoint, IcyCanvas canvas) {
-   	}
-
-   	@Override
-   	public void paint(Graphics2D g2, Sequence sequence, IcyCanvas canvas) {
-   		//int resolution = resolutionSelector.getValue();		
-   		//float maxWidth= 4;
-   		//float minWidth= 1;
-
-   		//if ( !isEnabled() ) return;
-   		//if ( !affectSequenceButton.isSelected() ) return;
-
-   		Viewer viewer = sequence.getFirstViewer();
-   		int t = viewer.getT();
-   		
-   		g2.setColor( Color.yellow );
-
-   		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-   		//BasicStroke stroke = new BasicStroke((float) (minWidth + (maxWidth - minWidth)*flowarrow.norme/resolution));
-		BasicStroke stroke = new BasicStroke((float) 2.0);
-
-		t = Math.min(t, sequence.getSizeT() - 2); /* replicate flow on last image */
-		
-		if (!flowArrowList.isEmpty() && t < flowArrowList.size()) {
-			ArrayList<FlowArrow> currentImageArrowList = flowArrowList.get(t);
-			
-	   		for ( FlowArrow flowarrow : currentImageArrowList )
-	   		{
-	   			if (hideZeroVelocitiesSelector.getValue()) 
-	   				if (flowarrow.norme < 0.3)
-	   					continue;
-
-	   			g2.setStroke(stroke);
-
-	   			g2.setColor( flowarrow.color );
-	   			AffineTransform at = g2.getTransform();
-	   			g2.translate( (int)flowarrow.x , (int)flowarrow.y );
-	   			g2.rotate( flowarrow.angle );
-	   			g2.translate( (int)-flowarrow.x , (int)-flowarrow.y );
-
-	   			Line2D l1 = new Line2D.Double(
-	   					flowarrow.x - flowarrow.norme / 2,
-	   					flowarrow.y , 
-	   					flowarrow.x - flowarrow.norme / 2 + flowarrow.norme ,
-	   					flowarrow.y
-	   			);
-
-	   			Line2D l2 = new Line2D.Double(
-	   					flowarrow.x - flowarrow.norme / 2 + 3*flowarrow.norme / 4,
-	   					flowarrow.y + flowarrow.norme / 4,
-	   					flowarrow.x - flowarrow.norme / 2 + flowarrow.norme,
-	   					flowarrow.y
-	   			);
-
-	   			Line2D l3 = new Line2D.Double(
-	   					flowarrow.x - flowarrow.norme / 2 + 3*flowarrow.norme / 4 ,
-	   					flowarrow.y - flowarrow.norme / 4 ,
-	   					flowarrow.x - flowarrow.norme / 2 + flowarrow.norme ,
-	   					flowarrow.y 
-	   			);
-
-	   			g2.draw( l1 );
-	   			g2.draw( l2 );
-	   			g2.draw( l3 );
-	   			g2.setTransform( at );
-	   		}
-			
-		}
-   	}
+	}  
 
    	public double getDistance( double x1 , double y1 , double z1 , double x2 , double y2 , double z2 )
    	{
@@ -493,28 +320,8 @@ public class SimpleOpticalFlow extends EzPlug implements Painter
 	{
 		// use this method to clean local variables or input streams (if any) to avoid memory leaks
    		if (inputSequence != null) {
-   			inputSequence.removePainter( this );
+   			inputSequence.removePainter(flowPainter);
    			inputSequence = null;	
    		}
-	}
-}
-
-class FlowArrow implements Comparable<FlowArrow>
-{
-	public FlowArrow( double x , double y )
-	{
-		this.x = x;
-		this.y = y;
-	}
-	double norme;
-	double vx = 0;
-	double vy = 0;
-	double x,y,angle,thickness;
-	Color color;
-	
-	public int compareTo(FlowArrow o) {
-		
-		if ( o.angle < this.angle ) return -1;
-		return 1;
 	}
 }
