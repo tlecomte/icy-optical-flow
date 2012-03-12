@@ -19,10 +19,10 @@
 
 package plugins.tlecomte.fem;
 
-import plugins.tlecomte.fem.BilinearMesh;
+import icy.math.ArrayMath;
 
 public class PrecomputeQuadratures { 
-	public static double[] precompute_phi_quadratures(final BilinearMesh mesh, final double detJe) {
+	public static double[] precompute_phi_quadratures(final Mesh mesh, final double detJe) {
 		System.out.println("Precompute stiffness matrix phi quadratures");
 	    
 	    int l = mesh.nodes_per_element();
@@ -45,39 +45,42 @@ public class PrecomputeQuadratures {
 	    return A_pre;
 	}
 	
-	public static double[] precompute_phiphi_quadratures(final BilinearMesh mesh, final double detJe, double xi_x, double eta_y) {
+	public static double[] precompute_phipsi_quadratures(final Mesh meshPhi, final Mesh meshPsi, final double detJe, double xi_x, double eta_y) {
 		System.out.println("Precompute stiffness matrix phi_j*phi_k quadratures");
 	    
-		int m = mesh.nodes_per_element();
-	    int l = (int) Math.pow(m, 2);
+	    int l = meshPhi.nodes_per_element()*meshPsi.nodes_per_element();
 	    double[] A_pre = new double[l];
 
-	    for (int j=0; j<m; j++) {
-	        int[] ajbj = mesh.canonical_node_coord_2D(j);
+	    for (int j=0; j<meshPhi.nodes_per_element(); j++) {
+	        int[] ajbj = meshPhi.canonical_node_coord_2D(j);
 	        final int aj = ajbj[0];
 	        final int bj = ajbj[1];
-	        for (int k=0; k<m; k++) {
-		        int[] akbk = mesh.canonical_node_coord_2D(k);
+	        for (int k=0; k<meshPsi.nodes_per_element(); k++) {
+		        int[] akbk = meshPsi.canonical_node_coord_2D(k);
 		        final int ak = akbk[0];
 		        final int bk = akbk[1];
 		        
 		        Integrand2DFunction integrand = new Integrand2DFunction() {
     				public double function(double x, double y) {
-    					return detJe*mesh.Nbar(aj, x)*mesh.Nbar(bj, y)*mesh.Nbar(ak, x)*mesh.Nbar(bk, y);
+    					return detJe*meshPhi.Nbar(aj, x)*meshPhi.Nbar(bj, y)*meshPsi.Nbar(ak, x)*meshPsi.Nbar(bk, y);
     				}
     			};
 	            
-	    	    if (mesh.order() == 1) // bilinear
-	    	        A_pre[j*m + k] = Quadratures.quadrature_integral_2D_order3(integrand);
+	    	    if (meshPsi.order() + meshPhi.order() <= 3) // lin-lin or quad-lin
+	    	        A_pre[j*meshPsi.nodes_per_element() + k] = Quadratures.quadrature_integral_2D_order3(integrand);
 	    	    else // biquad
-	    	        A_pre[j*m + k] = Quadratures.quadrature_integral_2D_order5(integrand);
+	    	        A_pre[j*meshPsi.nodes_per_element() + k] = Quadratures.quadrature_integral_2D_order5(integrand);
 	        }
 	    }
 	
 	    return A_pre;
 	}
 	
-	public static double[] precompute_dxphidxphi_quadratures(final BilinearMesh mesh, final double detJe, final double xi_x, double eta_y) {
+	public static double[] precompute_phiphi_quadratures(final Mesh mesh, final double detJe, double xi_x, double eta_y) {
+	    return precompute_phipsi_quadratures(mesh, mesh, detJe, xi_x, eta_y);
+	}
+	
+	public static double[] precompute_dxphidxphi_quadratures(final Mesh mesh, final double detJe, final double xi_x, double eta_y) {
 		System.out.println("Precompute stiffness matrix dxphi*dxphi quadratures");
 
 		int m = mesh.nodes_per_element();
@@ -109,7 +112,7 @@ public class PrecomputeQuadratures {
 	    return A_pre;
 	}
 	
-	public static double[] precompute_dyphidyphi_quadratures(final BilinearMesh mesh, final double detJe, double xi_x, final double eta_y) {
+	public static double[] precompute_dyphidyphi_quadratures(final Mesh mesh, final double detJe, double xi_x, final double eta_y) {
 		System.out.println("Precompute stiffness matrix dyphi*dyphi quadratures");
 
 		int m = mesh.nodes_per_element();	    
@@ -139,5 +142,11 @@ public class PrecomputeQuadratures {
 	    }
 	
 	    return A_pre;
+	}
+	
+	public static double[] precompute_2D_gradphigradphi_quadratures(final Mesh mesh, final double detJe, double xi_x, final double eta_y) {
+	    double[] dx = precompute_dxphidxphi_quadratures(mesh, detJe, xi_x, eta_y);
+	    double[] dy = precompute_dyphidyphi_quadratures(mesh, detJe, xi_x, eta_y);
+	    return ArrayMath.add(dx, dy);
 	}
 }
