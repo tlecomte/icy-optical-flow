@@ -1,33 +1,12 @@
-/*
- * Copyright 2010, 2011 Institut Pasteur.
- * 
- * This file is part of ICY.
- * 
- * ICY is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * ICY is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with ICY. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package plugins.tlecomte.fem;
 
-import plugins.tlecomte.fem.FemFunctions;
-
-public class BilinearMesh {
+public class BiquadraticMesh {
 	
 	// fields
     public Node[] nodes;
     //public nodes_pointers;
     //public free_nodes;
-    public Element[] elements;
+    public BiquadraticElement[] elements;
     //public boundary_edges;
     //public boundary_normals;
     //self.boundary_free_nodes = boundary_free_nodes;
@@ -37,17 +16,19 @@ public class BilinearMesh {
     public int N_node_x;
     public int N_node_y;
 	
-	public BilinearMesh(int Nx, int Ny) {   
-        N_node_x = Nx + 1;
-        N_node_y = Ny + 1;
+	public BiquadraticMesh(int Nx, int Ny) {   
+        N_node_x = 2*Nx + 1;
+        N_node_y = 2*Ny + 1;
         	
         // data structure for the rectangles
         
         // node list - three columns : Node number, x coordinate, y coordinate
         nodes = new Node[N_node_x*N_node_y];
         int i =0;
-        for (int x=0; x<N_node_x; x++) {
-        	for (int y=0; y<N_node_y; y++) {
+        for (int nx=0; nx<N_node_x; nx++) {
+        	for (int ny=0; ny<N_node_y; ny++) {
+        		double x = (double) (nx*Nx) / (double) (N_node_x - 1);
+        		double y = (double) (ny*Ny) / (double) (N_node_y - 1);
         		nodes[i] = new Node(i, x, y);
         		i++;
         	}
@@ -71,14 +52,19 @@ public class BilinearMesh {
         
         // element list - five columns : Element number, node1, node 2, node3, node4
         int element_number = Nx*Ny;
-        elements = new Element[element_number];
+        elements = new BiquadraticElement[element_number];
         for (i=0; i<element_number; i++) {
             int row = i/Nx;
             int col = i%Nx;
-            elements[i] = new BilinearElement(i, nodes[row*N_node_x + col],
-                    					         nodes[row*N_node_x + col + 1],
-                    					         nodes[(row+1)*N_node_x + col],
-                    					         nodes[(row+1)*N_node_x + col + 1]);
+            elements[i] = new BiquadraticElement(i, nodes[2*row*N_node_x + 2*col],
+                    					 			nodes[2*row*N_node_x + 2*col + 1],
+                    					 			nodes[2*row*N_node_x + 2*col + 2],
+                    					 			nodes[(2*row+1)*N_node_x + 2*col],
+                    					 			nodes[(2*row+1)*N_node_x + 2*col + 1],
+                    					 			nodes[(2*row+1)*N_node_x + 2*col + 2],
+                    					 			nodes[(2*row+2)*N_node_x + 2*col],
+                    					 			nodes[(2*row+2)*N_node_x + 2*col + 1],
+                    					 			nodes[(2*row+2)*N_node_x + 2*col + 2]);
         }
         
 //        // boundary edges list - three columns : Edge number, node1, node2
@@ -157,46 +143,46 @@ public class BilinearMesh {
         //self.boundary_elements = boundary_elements;
 	}
         
-    // convert a boundary node index between 0 and 1 to 1D coordinates in the linear
+    // convert a boundary node index between 0 and 1 to 1D coordinates in the quadratic
     // canonical element [-1,1]
     int canonical_node_coord_1D(int i) {
-        int ai = 2*(i%2) - 1;
+        int ai = i%3 - 1;
         return ai;
     }
     
-    // convert a node index between 0 and 3 to 2D coordinates in the bilinear
+    // convert a node index between 0 and 3 to 2D coordinates in the biquadratic
     // canonical element [-1,1]x[-1,1]
     int[] canonical_node_coord_2D(int i) {
-        int ai = 2*(i%2) - 1;
-        int bi = 2*(i/2) - 1;
+        int ai = i%3 - 1;
+        int bi = i/3 - 1;
         int[] ret = {ai, bi};
         return ret;
     }
 
     double Nbar(int xi, double x) {
-        return FemFunctions.Mbar(xi, x);
+        return FemFunctions.Nbar(xi, x);
     }
         
     double[] Nbar_1D(int xi, double[] x) {
-        return FemFunctions.Mbar_1D(xi, x);
+        return FemFunctions.Nbar_1D(xi, x);
     }
         
     //def Nbar_2D(xi, x):
-    //    return fem_functions.Mbar_2D(xi, x);
+    //    return fem_functions.Nbar_2D(xi, x);
 
     double Nbar_prime(int xi, double x) {
-        return FemFunctions.Mbar_prime(xi, x);
+        return FemFunctions.Nbar_prime(xi, x);
     }
 
     double[] Nbar_prime_1D(int xi, double[] x) {
-        return FemFunctions.Mbar_prime_1D(xi, x);
+        return FemFunctions.Nbar_prime_1D(xi, x);
     }
 
     //def Nbar_prime_2D(xi, x):
-    //    return fem_functions.Mbar_prime_2D(xi, x);
+    //    return fem_functions.Nbar_prime_2D(xi, x);
     
     int order() {
-        return 1; // linear mesh
+        return 2; // quadratic mesh
     }
 
     public int nodes_per_element() {

@@ -19,7 +19,29 @@
 
 package plugins.tlecomte.fem;
 
-public class Element {
+public class BiquadraticElement extends Element {
 	public int index;
 	public Node[] nodes;
+	
+	BiquadraticElement(int i, Node node0,
+							  Node node1,
+							  Node node2,
+							  Node node3,
+							  Node node4,
+							  Node node5,
+							  Node node6,
+							  Node node7,
+							  Node node8) {
+		index = i;
+		nodes = new Node[9];
+		nodes[0] = node0;
+		nodes[1] = node1;
+		nodes[2] = node2;
+		nodes[3] = node3;
+		nodes[4] = node4;
+		nodes[5] = node5;
+		nodes[6] = node6;
+		nodes[7] = node7;
+		nodes[8] = node8;
+	}
 }
