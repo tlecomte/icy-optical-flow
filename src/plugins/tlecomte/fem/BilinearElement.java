@@ -20,9 +20,6 @@
 package plugins.tlecomte.fem;
 
 public class BilinearElement extends Element {
-	public int index;
-	public Node[] nodes = new Node[4];
-	
 	BilinearElement(int i, Node node0,
 			               Node node1,
 			               Node node2,

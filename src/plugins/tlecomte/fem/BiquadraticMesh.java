@@ -1,20 +1,16 @@
 package plugins.tlecomte.fem;
 
-public class BiquadraticMesh {
+public class BiquadraticMesh extends Mesh {
 	
 	// fields
-    public Node[] nodes;
     //public nodes_pointers;
     //public free_nodes;
-    public BiquadraticElement[] elements;
     //public boundary_edges;
     //public boundary_normals;
     //self.boundary_free_nodes = boundary_free_nodes;
     //self.boundary_nodes_pointers_to_free = boundary_nodes_pointers_to_free;
     //self.boundary_nodes_pointers_to_grid = boundary_nodes_pointers_to_grid;
     //self.boundary_elements = boundary_elements;
-    public int N_node_x;
-    public int N_node_y;
 	
 	public BiquadraticMesh(int Nx, int Ny) {   
         N_node_x = 2*Nx + 1;
@@ -183,9 +179,5 @@ public class BiquadraticMesh {
     
     int order() {
         return 2; // quadratic mesh
-    }
-
-    public int nodes_per_element() {
-        return elements[0].nodes.length;
     }
 }
