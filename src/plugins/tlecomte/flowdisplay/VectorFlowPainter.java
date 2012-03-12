@@ -29,7 +29,7 @@
  * 
  */
 
-package plugins.tlecomte.simpleopticalflow;
+package plugins.tlecomte.flowdisplay;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -74,11 +74,11 @@ public class VectorFlowPainter implements Painter {
 	boolean hideZeroVelocities = false;
 	
     // clear the arrows list
-	void clear() {
+	public void clear() {
 		flowArrowList.clear();
 	}
 	
-	void update_flow_arrows(double[] u, double[] v, int w, int h, int resolution) {
+	public void update_flow_arrows(double[] u, double[] v, int w, int h, int resolution) {
    		/* resolution is the number of pixels for the square containing the arrow */
     	
    		ArrayList<FlowArrow> currentImageArrowList = new ArrayList<FlowArrow>();

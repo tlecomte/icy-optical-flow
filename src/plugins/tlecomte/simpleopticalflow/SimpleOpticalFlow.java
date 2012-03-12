@@ -43,6 +43,7 @@ import icy.image.IcyBufferedImage;
 import plugins.tlecomte.flowdisplay.FlowAngle;
 import plugins.tlecomte.flowdisplay.FlowMiddlebury;
 import plugins.tlecomte.flowdisplay.FlowNorm;
+import plugins.tlecomte.flowdisplay.VectorFlowPainter;
 
 public class SimpleOpticalFlow extends EzPlug
 {
