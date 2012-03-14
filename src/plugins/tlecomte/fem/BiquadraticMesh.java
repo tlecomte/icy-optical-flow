@@ -49,7 +49,7 @@ public class BiquadraticMesh extends Mesh {
         j = 0;
         for (i=0; i<node_number; i++) {
         	double[] coords = nodes[i].coords;
-            if (coords[0]!=0 && coords[0]!=Nx && coords[1]!=0 && coords[1]==Ny) {
+            if (coords[0]!=0 && coords[0]!=Nx && coords[1]!=0 && coords[1]!=Ny) {
                 // free node
                 freeNodes[j] = nodes[i];
                 j += 1;
