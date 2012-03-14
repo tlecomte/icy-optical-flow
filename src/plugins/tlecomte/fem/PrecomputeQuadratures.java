@@ -149,4 +149,60 @@ public class PrecomputeQuadratures {
 	    double[] dy = precompute_dyphidyphi_quadratures(mesh, detJe, xi_x, eta_y);
 	    return ArrayMath.add(dx, dy);
 	}
+	
+	public static double[] precompute_dxphipsi_quadratures(final BilinearMesh meshLin, final BiquadraticMesh meshQuad, final double detJe, final double xi_x, final double eta_y) {
+		System.out.println("Precompute stiffness matrix dxphi*psi quadratures");
+
+	    int l = meshLin.nodes_per_element()*meshQuad.nodes_per_element();
+	    double[] A_pre = new double[l];
+	
+	    for (int j=0; j<meshLin.nodes_per_element(); j++) {
+	        int[] ajbj = meshLin.canonical_node_coord_2D(j);
+	        final int aj = ajbj[0];
+	        final int bj = ajbj[1];
+	        for (int k=0; k<meshQuad.nodes_per_element(); k++) {
+		        int[] akbk = meshQuad.canonical_node_coord_2D(k);
+		        final int ak = akbk[0];
+		        final int bk = akbk[1];
+
+		        Integrand2DFunction integrand = new Integrand2DFunction() {
+    				public double function(double x, double y) {
+    					return detJe*meshLin.Nbar(aj, x)*meshLin.Nbar(bj, y)*xi_x*meshQuad.Nbar_prime(ak, x)*meshQuad.Nbar(bk, y);
+    				}
+    			};
+		        
+	    	    A_pre[j*meshQuad.nodes_per_element() + k] = Quadratures.quadrature_integral_2D_order3(integrand);
+	        }
+	    }
+	
+	    return A_pre;
+	}
+	
+	public static double[] precompute_dyphipsi_quadratures(final BilinearMesh meshLin, final BiquadraticMesh meshQuad, final double detJe, final double xi_x, final double eta_y) {
+		System.out.println("Precompute stiffness matrix dxphi*psi quadratures");
+
+	    int l = meshLin.nodes_per_element()*meshQuad.nodes_per_element();
+	    double[] A_pre = new double[l];
+	
+	    for (int j=0; j<meshLin.nodes_per_element(); j++) {
+	        int[] ajbj = meshLin.canonical_node_coord_2D(j);
+	        final int aj = ajbj[0];
+	        final int bj = ajbj[1];
+	        for (int k=0; k<meshQuad.nodes_per_element(); k++) {
+		        int[] akbk = meshQuad.canonical_node_coord_2D(k);
+		        final int ak = akbk[0];
+		        final int bk = akbk[1];
+
+		        Integrand2DFunction integrand = new Integrand2DFunction() {
+    				public double function(double x, double y) {
+    					return detJe*meshLin.Nbar(aj, x)*meshLin.Nbar(bj, y)*meshQuad.Nbar(ak, x)*eta_y*meshQuad.Nbar_prime(bk, y);
+    				}
+    			};
+		        
+	    	    A_pre[j*meshQuad.nodes_per_element() + k] = Quadratures.quadrature_integral_2D_order3(integrand);
+	        }
+	    }
+	
+	    return A_pre;
+	}
 }
