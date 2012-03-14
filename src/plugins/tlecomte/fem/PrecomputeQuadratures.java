@@ -205,4 +205,58 @@ public class PrecomputeQuadratures {
 	
 	    return A_pre;
 	}
+	
+	public static double[] precompute_1D_dxphidxphi_quadratures(final Mesh mesh, final double detJe, final double xi_x, final double eta_y) {
+		System.out.println("Precompute 1D stiffness matrix dxphi*dxphi quadratures");
+
+	    int l = (int) Math.pow(mesh.nodesPerEdge(), 2);
+	    double[] A_pre = new double[l];
+	
+	    final double detJe1D = 1./xi_x;
+	    final double xi1D = xi_x;
+	    
+	    for (int j=0; j<mesh.nodesPerEdge(); j++) {
+	        for (int k=0; k<mesh.nodesPerEdge(); k++) {
+		        final int aj = mesh.canonical_node_coord_1D(j);
+		        final int ak = mesh.canonical_node_coord_1D(k);
+
+		        Integrand1D integrand = new Integrand1D() {
+    				public double function(double x) {
+    					return detJe1D*xi1D*mesh.Nbar_prime(aj, x)*xi_x*mesh.Nbar_prime(ak, x);
+    				}
+    			};
+		        
+	    	    A_pre[j*mesh.nodesPerEdge() + k] = Quadratures.quadrature_integral_1D_order3(integrand);
+	        }
+	    }
+	
+	    return A_pre;
+	}
+
+	public static double[] precompute_1D_dyphidyphi_quadratures(final Mesh mesh, final double detJe, final double xi_x, final double eta_y) {
+		System.out.println("Precompute 1D stiffness matrix dyphi*dyphi quadratures");
+
+	    int l = (int) Math.pow(mesh.nodesPerEdge(), 2);
+	    double[] A_pre = new double[l];
+	
+	    final double detJe1D = 1./eta_y;
+	    final double xi1D = eta_y;
+	    
+	    for (int j=0; j<mesh.nodesPerEdge(); j++) {
+	        for (int k=0; k<mesh.nodesPerEdge(); k++) {
+		        final int aj = mesh.canonical_node_coord_1D(j);
+		        final int ak = mesh.canonical_node_coord_1D(k);
+
+		        Integrand1D integrand = new Integrand1D() {
+    				public double function(double x) {
+    					return detJe1D*xi1D*mesh.Nbar_prime(aj, x)*xi_x*mesh.Nbar_prime(ak, x);
+    				}
+    			};
+		        
+	    	    A_pre[j*mesh.nodesPerEdge() + k] = Quadratures.quadrature_integral_1D_order3(integrand);
+	        }
+	    }
+	
+	    return A_pre;
+	}
 }
