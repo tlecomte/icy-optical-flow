@@ -19,19 +19,11 @@
 
 package plugins.tlecomte.fem;
 
-interface Integrand1DFunction {
-    double function(double U);
-}
-
-interface Integrand2DFunction {
-    double function(double U1, double U2);
-}
-
 public class Quadratures {
 	
 	// compute the integrals numerically with a 1D two point quadrature, which is
 	// exact up to order 3
-	static double quadrature_integral_1D_order3(Integrand1DFunction integrand)
+	static double quadrature_integral_1D_order3(Integrand1D integrand)
 	{
 		double u_order3 = 1./Math.sqrt(3.);
 		double[] U_1D_order3 = {-u_order3, u_order3};
@@ -44,7 +36,7 @@ public class Quadratures {
 	
 	// compute the integrals numerically with a 1D two point quadrature, which is
 	// exact up to order 3
-	static double quadrature_integral_1D_order5(Integrand1DFunction integrand)
+	static double quadrature_integral_1D_order5(Integrand1D integrand)
 	{
 		double u_order5 = Math.sqrt(3./5.);
 		double wu_order5 = 5./9.;
@@ -61,7 +53,7 @@ public class Quadratures {
 	    
 	// compute the integrals numerically with a 2D 2x5 point quadrature, which is
 	// exact up to order 7 on each direction
-	static double quadrature_integral_2D_order7(Integrand2DFunction integrand)
+	static double quadrature_integral_2D_order7(Integrand2D integrand)
 	{
 		double u1_order7 = Math.sqrt((3. - 2.*Math.sqrt(6./5.))/7.);
 		double u2_order7 = Math.sqrt((3. + 2.*Math.sqrt(6./5.))/7.);
@@ -94,7 +86,7 @@ public class Quadratures {
 	    
 	// compute the integrals numerically with a 2D 2x3 point quadrature, which is
 	// exact up to order 5 on each direction
-	static double quadrature_integral_2D_order5(Integrand2DFunction integrand)
+	static double quadrature_integral_2D_order5(Integrand2D integrand)
 	{
 		double u_order5 = Math.sqrt(3./5.);
 		double wu_order5 = 5./9.;
@@ -122,7 +114,7 @@ public class Quadratures {
 	
 	// compute the integrals numerically with a 2D 2x2 point quadrature, which is
 	// exact up to order 3 on each direction
-	static double quadrature_integral_2D_order3(Integrand2DFunction integrand)
+	static double quadrature_integral_2D_order3(Integrand2D integrand)
 	{
 		double u_order3 = 1./Math.sqrt(3.);
 		double[][] U1_2D_order3 = {{-u_order3,  u_order3},

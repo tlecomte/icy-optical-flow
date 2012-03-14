@@ -33,7 +33,7 @@ public class PrecomputeQuadratures {
 	        final int aj = ajbj[0];
 	        final int bj = ajbj[1];
 	        
-	        Integrand2DFunction integrand = new Integrand2DFunction() {
+	        Integrand2D integrand = new Integrand2D() {
 				public double function(double x, double y) {
 					return detJe*mesh.Nbar(aj, x)*mesh.Nbar(bj, y);
 				}
@@ -60,7 +60,7 @@ public class PrecomputeQuadratures {
 		        final int ak = akbk[0];
 		        final int bk = akbk[1];
 		        
-		        Integrand2DFunction integrand = new Integrand2DFunction() {
+		        Integrand2D integrand = new Integrand2D() {
     				public double function(double x, double y) {
     					return detJe*meshPhi.Nbar(aj, x)*meshPhi.Nbar(bj, y)*meshPsi.Nbar(ak, x)*meshPsi.Nbar(bk, y);
     				}
@@ -96,7 +96,7 @@ public class PrecomputeQuadratures {
 		        final int ak = akbk[0];
 		        final int bk = akbk[1];
 		        
-		        Integrand2DFunction integrand = new Integrand2DFunction() {
+		        Integrand2D integrand = new Integrand2D() {
     				public double function(double x, double y) {
     					return detJe*xi_x*mesh.Nbar_prime(aj, x)*mesh.Nbar(bj, y)*xi_x*mesh.Nbar_prime(ak, x)*mesh.Nbar(bk, y);
     				}
@@ -128,7 +128,7 @@ public class PrecomputeQuadratures {
 		        final int ak = akbk[0];
 		        final int bk = akbk[1];
 
-		        Integrand2DFunction integrand = new Integrand2DFunction() {
+		        Integrand2D integrand = new Integrand2D() {
     				public double function(double x, double y) {
     					return detJe*mesh.Nbar(aj, x)*eta_y*mesh.Nbar_prime(bj, y)*mesh.Nbar(ak, x)*eta_y*mesh.Nbar_prime(bk, y);
     				}
@@ -165,7 +165,7 @@ public class PrecomputeQuadratures {
 		        final int ak = akbk[0];
 		        final int bk = akbk[1];
 
-		        Integrand2DFunction integrand = new Integrand2DFunction() {
+		        Integrand2D integrand = new Integrand2D() {
     				public double function(double x, double y) {
     					return detJe*meshLin.Nbar(aj, x)*meshLin.Nbar(bj, y)*xi_x*meshQuad.Nbar_prime(ak, x)*meshQuad.Nbar(bk, y);
     				}
@@ -193,7 +193,7 @@ public class PrecomputeQuadratures {
 		        final int ak = akbk[0];
 		        final int bk = akbk[1];
 
-		        Integrand2DFunction integrand = new Integrand2DFunction() {
+		        Integrand2D integrand = new Integrand2D() {
     				public double function(double x, double y) {
     					return detJe*meshLin.Nbar(aj, x)*meshLin.Nbar(bj, y)*meshQuad.Nbar(ak, x)*eta_y*meshQuad.Nbar_prime(bk, y);
     				}
