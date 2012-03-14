@@ -151,7 +151,7 @@ public class BiquadraticMesh extends Mesh {
         
     // convert a boundary node index between 0 and 1 to 1D coordinates in the quadratic
     // canonical element [-1,1]
-    int canonical_node_coord_1D(int i) {
+    public int canonical_node_coord_1D(int i) {
         int ai = i%3 - 1;
         return ai;
     }
