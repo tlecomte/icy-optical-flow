@@ -23,7 +23,7 @@ public class Quadratures {
 	
 	// compute the integrals numerically with a 1D two point quadrature, which is
 	// exact up to order 3
-	static double quadrature_integral_1D_order3(Integrand1D integrand)
+	public static double quadrature_integral_1D_order3(Integrand1D integrand)
 	{
 		double u_order3 = 1./Math.sqrt(3.);
 		double[] U_1D_order3 = {-u_order3, u_order3};
