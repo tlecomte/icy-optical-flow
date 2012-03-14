@@ -5,6 +5,8 @@ public abstract class Mesh {
     public Node[] nodes;
     public Node[] freeNodes;
     public Element[] elements;
+    public BoundaryElement[] edges;
+    public BoundaryNode[] boundaryNodes;
     public int N_node_x;
     public int N_node_y;
         
@@ -34,5 +36,9 @@ public abstract class Mesh {
 
     public int nodes_per_element() {
         return elements[0].nodes.length;
+    }
+    
+    public int nodesPerEdge() {
+    	return edges[0].nodes.length;
     }
 }

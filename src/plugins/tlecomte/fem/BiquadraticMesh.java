@@ -73,80 +73,73 @@ public class BiquadraticMesh extends Mesh {
                     					 			nodes[(2*row+2)*N_node_x + 2*col + 2]);
         }
         
-//        // boundary edges list - three columns : Edge number, node1, node2
-//        left_boundary_edge_number = Ny; // as many edges as elements
-//        right_boundary_edge_number = Ny;
-//        top_boundary_edge_number = Nx;
-//        bottom_boundary_edge_number = Nx;
-//        
-//        boundary_edge_number = (left_boundary_edge_number + right_boundary_edge_number
-//                             + top_boundary_edge_number + bottom_boundary_edge_number);
-//                             
-//        boundary_edges = np.zeros((boundary_edge_number, 3));
-//        boundary_normals = np.zeros((boundary_edge_number, 3));
-//        boundary_free_nodes = np.zeros(boundary_edge_number);
-//        boundary_nodes_pointers_to_free = np.zeros(boundary_edge_number);
-//        boundary_nodes_pointers_to_grid = np.zeros(boundary_edge_number);
-//        boundary_elements = np.zeros(boundary_edge_number);
-//        
-//        iterator = xrange(boundary_edge_number).__iter__();
-//        k = 0    
-//        
-//        for i in xrange(bottom_boundary_edge_number):
-//            j = iterator.next();
-//            boundary_edges[j] = [j, j, j+1];
-//            boundary_nodes_pointers_to_grid[j] = i;
-//            // free boundary node
-//            boundary_nodes_pointers_to_free[j] = k;
-//            boundary_free_nodes[k] = j;
-//            k += 1;
-//            boundary_normals[j] = [j, 0., -1.];
-//            boundary_elements[j] = i;
-//    
-//        for i in xrange(right_boundary_edge_number):
-//            j = iterator.next();
-//            boundary_edges[j] = [j, j, j+1];
-//            boundary_nodes_pointers_to_grid[j] = (i+1)*(Nx+1) - 1;
-//            // free boundary node
-//            boundary_nodes_pointers_to_free[j] = k;
-//            boundary_free_nodes[k] = j;
-//            k += 1;
-//            boundary_normals[j] = [j, 1., 0.];
-//            boundary_elements[j] = Nx-1 + i*Nx;
-//            
-//        for i in range(top_boundary_edge_number)[::-1]:
-//            j = iterator.next();
-//            boundary_edges[j] = [j, j, j+1];
-//            boundary_nodes_pointers_to_grid[j] = (Nx+1)*Ny + i + 1;
-//            // free boundary node
-//            boundary_nodes_pointers_to_free[j] = k;
-//            boundary_free_nodes[k] = j;
-//            k += 1;
-//            boundary_normals[j] = [j, 0., 1.];
-//            boundary_elements[j] = (Ny-1)*Nx + i;
-//        
-//        for i in range(left_boundary_edge_number)[::-1]:
-//            j = iterator.next();
-//            boundary_edges[j] = [j, j, (j+1)%boundary_edge_number];
-//            boundary_nodes_pointers_to_grid[j] = (i+1)*(Nx+1);
-//            // free boundary node
-//            boundary_nodes_pointers_to_free[j] = k;
-//            boundary_free_nodes[k] = j;
-//            k += 1;
-//            boundary_normals[j] = [j, -1., 0.];
-//            boundary_elements[j] = i*Nx;
+        int leftEdgeNumber = Ny; // as many edges as elements
+        int rightEdgeNumber = Ny;
+        int topEdgeNumber = Nx;
+        int bottomEdgeNumber = Nx;
         
-        // make a dict out of the various lists
-        //nodes = nodes;
-        //nodes_pointers = nodes_pointers;
-        //free_nodes = free_nodes;
-        //elements = elements;
-        //self.boundary_edges = boundary_edges;
-        //self.boundary_normals = boundary_normals;
-        //self.boundary_free_nodes = boundary_free_nodes;
-        //self.boundary_nodes_pointers_to_free = boundary_nodes_pointers_to_free;
-        //self.boundary_nodes_pointers_to_grid = boundary_nodes_pointers_to_grid;
-        //self.boundary_elements = boundary_elements;
+        int edgeNumber = (leftEdgeNumber + rightEdgeNumber
+                             + topEdgeNumber + bottomEdgeNumber);
+        
+        boundaryNodes = new BoundaryNode[2*edgeNumber];
+
+        j = 0;
+        for (i=0; i<bottomEdgeNumber; i++) {
+        	boundaryNodes[2*j] = new BoundaryNode(2*j, nodes[2*i]);
+        	boundaryNodes[2*j+1] = new BoundaryNode(2*j+1, nodes[2*i+1]);
+        	j += 1; 
+        }
+
+        for (i=0; i<rightEdgeNumber; i++) {
+        	boundaryNodes[2*j] = new BoundaryNode(2*j, nodes[(2*i+1)*(2*Nx+1) - 1]);
+        	boundaryNodes[2*j+1] = new BoundaryNode(2*j+1, nodes[(2*i+2)*(2*Nx+1) - 1]);
+        	j += 1; 
+        }
+
+        // reversed order for counter-clockwise order !
+        for (i=topEdgeNumber-1; i>=0; i--) {
+        	boundaryNodes[2*j] = new BoundaryNode(2*j, nodes[(2*Nx+1)*2*Ny + 2*i + 2]);
+        	boundaryNodes[2*j+1] = new BoundaryNode(2*j+1, nodes[(2*Nx+1)*2*Ny + 2*i + 1]);
+        	j += 1; 
+        }           
+
+        // reversed order for counter-clockwise order !
+        for (i=leftEdgeNumber-1; i>=0; i--) {
+        	boundaryNodes[2*j] = new BoundaryNode(2*j, nodes[(2*i+2)*(2*Nx+1)]);
+        	boundaryNodes[2*j+1] = new BoundaryNode(2*j+1, nodes[(2*i+1)*(2*Nx+1)]);
+        	j += 1; 
+        }
+
+        edges = new BoundaryElement[edgeNumber];
+
+        j = 0;
+        for (i=0; i<bottomEdgeNumber; i++) {
+        	double normalX = 0.;
+        	double normalY = -1.;
+        	edges[j] = new BiquadraticBoundaryElement(j, boundaryNodes[2*j], boundaryNodes[2*j+1], boundaryNodes[2*j+2], normalX, normalY);
+        	j += 1; 
+        }
+
+        for (i=0; i<rightEdgeNumber; i++) {
+        	double normalX = 1.;
+        	double normalY = 0.;
+        	edges[j] = new BiquadraticBoundaryElement(j, boundaryNodes[2*j], boundaryNodes[2*j+1], boundaryNodes[2*j+2], normalX, normalY);
+        	j += 1; 
+        }
+
+        for (i=0; i<topEdgeNumber; i++) {
+        	double normalX = 0.;
+        	double normalY = 1.;
+        	edges[j] = new BiquadraticBoundaryElement(j, boundaryNodes[2*j], boundaryNodes[2*j+1], boundaryNodes[2*j+2], normalX, normalY);
+        	j += 1; 
+        }
+        
+        for (i=0; i<leftEdgeNumber; i++) {
+        	double normalX = -1.;
+        	double normalY = 0.;
+        	edges[j] = new BiquadraticBoundaryElement(j, boundaryNodes[2*j], boundaryNodes[2*j+1], boundaryNodes[(2*j+2)%(2*edgeNumber)], normalX, normalY);
+        	j += 1; 
+        }
 	}
         
     // convert a boundary node index between 0 and 1 to 1D coordinates in the quadratic
