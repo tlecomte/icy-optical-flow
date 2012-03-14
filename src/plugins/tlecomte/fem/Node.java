@@ -21,11 +21,16 @@ package plugins.tlecomte.fem;
 
 public class Node {
 	public int index;
+	public int pointer;
 	public double[] coords = new double[2];
 	
 	Node(int i, double x, double y) {
 		index = i;
 		coords[0] = y;
 		coords[1] = x;
+	}
+	
+	void setPointer(int pointer) {
+		this.pointer = pointer;
 	}
 }

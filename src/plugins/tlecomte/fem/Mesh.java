@@ -3,6 +3,7 @@ package plugins.tlecomte.fem;
 public abstract class Mesh {
 	// fields
     public Node[] nodes;
+    public Node[] freeNodes;
     public Element[] elements;
     public int N_node_x;
     public int N_node_y;

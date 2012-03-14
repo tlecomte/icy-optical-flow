@@ -49,21 +49,31 @@ public class BilinearMesh extends Mesh {
         	}
         }
 
-//        int node_number = N_node_x*N_node_y;
-//        
-//        int j = 0;
-//        for (i=0; i<node_number; i++) {
-//        	double[] coords = nodes[i].coords;
-//            if (coords[0]==0 || coords[0]==Nx || coords[1]==0 || coords[1]==Ny) {
-//                // fixed node
-//                nodes_pointers[i] = -1;
-//            } else {
-//                // free node
-//                nodes_pointers[i] = j;
-//                free_nodes[j] = i;
-//                j += 1;
-//            }
-//        }
+        int node_number = N_node_x*N_node_y;
+        
+        int j = 0;
+        for (i=0; i<node_number; i++) {
+        	double[] coords = nodes[i].coords;
+            if (coords[0]==0 || coords[0]==Nx || coords[1]==0 || coords[1]==Ny) {
+                // fixed node
+            	nodes[i].setPointer(-1);
+            } else {
+                // free node
+            	nodes[i].setPointer(j);
+                j += 1;
+            }
+        }
+        
+        freeNodes = new Node[j];
+        j = 0;
+        for (i=0; i<node_number; i++) {
+        	double[] coords = nodes[i].coords;
+            if (coords[0]!=0 && coords[0]!=Nx && coords[1]!=0 && coords[1]==Ny) {
+                // free node
+                freeNodes[j] = nodes[i];
+                j += 1;
+            }
+        }
         
         // element list - five columns : Element number, node1, node 2, node3, node4
         int element_number = Nx*Ny;
