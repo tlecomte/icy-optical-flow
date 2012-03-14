@@ -165,7 +165,7 @@ public class BiquadraticMesh extends Mesh {
         return ret;
     }
 
-    double Nbar(int xi, double x) {
+    public double Nbar(int xi, double x) {
         return FemFunctions.Nbar(xi, x);
     }
         
