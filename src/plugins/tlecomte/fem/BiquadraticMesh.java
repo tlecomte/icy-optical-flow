@@ -15,41 +15,38 @@ public class BiquadraticMesh extends Mesh {
 	public BiquadraticMesh(int Nx, int Ny) {   
         N_node_x = 2*Nx + 1;
         N_node_y = 2*Ny + 1;
-        	
+        int node_number = N_node_x*N_node_y;
+        
         // data structure for the rectangles
         
         // node list - three columns : Node number, x coordinate, y coordinate
-        nodes = new Node[N_node_x*N_node_y];
-        int i =0;
-        for (int nx=0; nx<N_node_x; nx++) {
-        	for (int ny=0; ny<N_node_y; ny++) {
+        nodes = new Node[node_number];
+        int i = 0;
+        int j = 0;
+        for (int ny=0; ny<N_node_y; ny++) {
+        	for (int nx=0; nx<N_node_x; nx++) {
         		double x = (double) (nx*Nx) / (double) (N_node_x - 1);
         		double y = (double) (ny*Ny) / (double) (N_node_y - 1);
         		nodes[i] = new Node(i, x, y);
+        		
+                if (nx==0 || nx==N_node_x-1 || ny==0 || ny==N_node_y-1) {
+                    // fixed node
+                    nodes[i].setPointer(-1);
+                } else {
+                    // free node
+                	// FIXME the meaning of "pointer" could be more explicit, like pointerToFree
+                    nodes[i].setPointer(j);
+                    j += 1;
+                }        		
         		i++;
         	}
-        }
-
-        int node_number = N_node_x*N_node_y;
-        
-        int j = 0;
-        for (i=0; i<node_number; i++) {
-        	double[] coords = nodes[i].coords;
-            if (coords[0]==0 || coords[0]==Nx || coords[1]==0 || coords[1]==Ny) {
-                // fixed node
-                nodes[i].setPointer(-1);
-            } else {
-                // free node
-                nodes[i].setPointer(j);
-                j += 1;
-            }
         }
         
         freeNodes = new Node[j];
         j = 0;
         for (i=0; i<node_number; i++) {
-        	double[] coords = nodes[i].coords;
-            if (coords[0]!=0 && coords[0]!=Nx && coords[1]!=0 && coords[1]!=Ny) {
+        	int pointer = nodes[i].pointer;
+        	if (pointer != -1) {
                 // free node
                 freeNodes[j] = nodes[i];
                 j += 1;

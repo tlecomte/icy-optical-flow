@@ -26,39 +26,36 @@ public class BilinearMesh extends Mesh {
 	public BilinearMesh(int Nx, int Ny) {   
         N_node_x = Nx + 1;
         N_node_y = Ny + 1;
-        	
+        int node_number = N_node_x*N_node_y;
+        
         // data structure for the rectangles
         
         // node list - three columns : Node number, x coordinate, y coordinate
-        nodes = new Node[N_node_x*N_node_y];
+        nodes = new Node[node_number];
         int i =0;
-        for (int x=0; x<N_node_x; x++) {
-        	for (int y=0; y<N_node_y; y++) {
+        int j = 0;
+    	for (int y=0; y<N_node_y; y++) {
+            for (int x=0; x<N_node_x; x++) {
         		nodes[i] = new Node(i, x, y);
+        		
+                if (x==0 || x==N_node_x-1 || y==0 || y==N_node_y-1) {
+                    // fixed node
+                	nodes[i].setPointer(-1);
+                } else {
+                    // free node
+                	nodes[i].setPointer(j);
+                    j += 1;
+                }
+        		
         		i++;
         	}
-        }
-
-        int node_number = N_node_x*N_node_y;
-        
-        int j = 0;
-        for (i=0; i<node_number; i++) {
-        	double[] coords = nodes[i].coords;
-            if (coords[0]==0 || coords[0]==Nx || coords[1]==0 || coords[1]==Ny) {
-                // fixed node
-            	nodes[i].setPointer(-1);
-            } else {
-                // free node
-            	nodes[i].setPointer(j);
-                j += 1;
-            }
         }
         
         freeNodes = new Node[j];
         j = 0;
         for (i=0; i<node_number; i++) {
-        	double[] coords = nodes[i].coords;
-            if (coords[0]!=0 && coords[0]!=Nx && coords[1]!=0 && coords[1]!=Ny) {
+        	int pointer = nodes[i].pointer;
+            if (pointer != -1) {
                 // free node
                 freeNodes[j] = nodes[i];
                 j += 1;
