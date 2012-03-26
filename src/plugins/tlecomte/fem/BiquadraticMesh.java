@@ -82,27 +82,27 @@ public class BiquadraticMesh extends Mesh {
 
         j = 0;
         for (i=0; i<bottomEdgeNumber; i++) {
-        	boundaryNodes[2*j] = new BoundaryNode(2*j, nodes[2*i]);
+        	boundaryNodes[2*j]   = new BoundaryNode(2*j,   nodes[2*i]);
         	boundaryNodes[2*j+1] = new BoundaryNode(2*j+1, nodes[2*i+1]);
         	j += 1; 
         }
 
         for (i=0; i<rightEdgeNumber; i++) {
-        	boundaryNodes[2*j] = new BoundaryNode(2*j, nodes[(2*i+1)*(2*Nx+1) - 1]);
+        	boundaryNodes[2*j]   = new BoundaryNode(2*j,   nodes[(2*i+1)*(2*Nx+1) - 1]);
         	boundaryNodes[2*j+1] = new BoundaryNode(2*j+1, nodes[(2*i+2)*(2*Nx+1) - 1]);
         	j += 1; 
         }
 
         // reversed order for counter-clockwise order !
         for (i=topEdgeNumber-1; i>=0; i--) {
-        	boundaryNodes[2*j] = new BoundaryNode(2*j, nodes[(2*Nx+1)*2*Ny + 2*i + 2]);
+        	boundaryNodes[2*j]   = new BoundaryNode(2*j,   nodes[(2*Nx+1)*2*Ny + 2*i + 2]);
         	boundaryNodes[2*j+1] = new BoundaryNode(2*j+1, nodes[(2*Nx+1)*2*Ny + 2*i + 1]);
         	j += 1; 
         }           
 
         // reversed order for counter-clockwise order !
         for (i=leftEdgeNumber-1; i>=0; i--) {
-        	boundaryNodes[2*j] = new BoundaryNode(2*j, nodes[(2*i+2)*(2*Nx+1)]);
+        	boundaryNodes[2*j]   = new BoundaryNode(2*j,   nodes[(2*i+2)*(2*Nx+1)]);
         	boundaryNodes[2*j+1] = new BoundaryNode(2*j+1, nodes[(2*i+1)*(2*Nx+1)]);
         	j += 1; 
         }
