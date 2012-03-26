@@ -222,7 +222,7 @@ public class PrecomputeQuadratures {
 
 		        Integrand1D integrand = new Integrand1D() {
     				public double function(double x) {
-    					return detJe1D*xi1D*mesh.Nbar_prime(aj, x)*xi_x*mesh.Nbar_prime(ak, x);
+    					return detJe1D*xi1D*mesh.Nbar_prime(aj, x)*xi1D*mesh.Nbar_prime(ak, x);
     				}
     			};
 		        
@@ -249,7 +249,7 @@ public class PrecomputeQuadratures {
 
 		        Integrand1D integrand = new Integrand1D() {
     				public double function(double x) {
-    					return detJe1D*xi1D*mesh.Nbar_prime(aj, x)*xi_x*mesh.Nbar_prime(ak, x);
+    					return detJe1D*xi1D*mesh.Nbar_prime(aj, x)*xi1D*mesh.Nbar_prime(ak, x);
     				}
     			};
 		        
