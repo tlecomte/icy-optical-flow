@@ -308,7 +308,7 @@ public class SimpleOpticalFlow extends EzPlug
       	
       	// ask Icy core not to distort the colors
       	for (int i=0; i<3; i++) {
-      		axisSequence.setComponentUserBoundsAutoUpdate(false);
+      		axisSequence.setAutoUpdateChannelBounds(false);
       		axisSequence.getColorModel().setComponentUserMinValue(i, 0.);
       	}
       	
