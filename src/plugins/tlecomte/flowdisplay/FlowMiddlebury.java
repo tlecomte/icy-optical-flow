@@ -110,7 +110,7 @@ public class FlowMiddlebury extends Sequence {
       	
       	// ask Icy core not to distort the colors
       	for (int i=0; i<3; i++) {
-      		setComponentUserBoundsAutoUpdate(false);
+      		setAutoUpdateChannelBounds(false);
       		getColorModel().setComponentUserMinValue(i, 0.);
       	}
       	
