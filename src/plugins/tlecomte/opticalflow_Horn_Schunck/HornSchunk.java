@@ -23,10 +23,10 @@ import icy.math.ArrayMath;
 import plugins.adufour.filtering.Kernels1D;
 import plugins.adufour.filtering.Convolution1D;
 import plugins.adufour.filtering.FilterToolbox.Axis;
-import plugins.tlecomte.fem.PrecomputeQuadratures;
-import plugins.tlecomte.fem.BilinearMesh;
-import plugins.tlecomte.fem.Element;
-import plugins.tlecomte.fem.Node;
+import plugins.tlecomte.rectangularFEM.BilinearMesh;
+import plugins.tlecomte.rectangularFEM.Element;
+import plugins.tlecomte.rectangularFEM.Node;
+import plugins.tlecomte.rectangularFEM.PrecomputeQuadratures;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.algo.solver.AbstractDoubleIterationMonitor;

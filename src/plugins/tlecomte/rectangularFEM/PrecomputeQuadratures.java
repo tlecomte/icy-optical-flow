@@ -17,7 +17,7 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.fem;
+package plugins.tlecomte.rectangularFEM;
 
 import icy.math.ArrayMath;
 

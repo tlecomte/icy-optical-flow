@@ -18,11 +18,14 @@
  */
 
 
-package plugins.tlecomte.fem;
+package plugins.tlecomte.rectangularFEM;
 
-public class BoundaryElement extends Element {
+public class BoundaryNode {
 	public int index;
-	public BoundaryNode[] nodes;
-	public double normalX;
-	public double normalY;
+	public Node gridNode;
+	
+	BoundaryNode(int i, Node gridNode) {
+		index = i;
+		this.gridNode = gridNode;
+	}
 }

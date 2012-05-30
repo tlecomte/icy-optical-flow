@@ -1,4 +1,4 @@
-package plugins.tlecomte.fem;
+package plugins.tlecomte.rectangularFEM;
 
 public class BiquadraticBoundaryElement extends BoundaryElement {
 	BiquadraticBoundaryElement(int i, BoundaryNode node0,

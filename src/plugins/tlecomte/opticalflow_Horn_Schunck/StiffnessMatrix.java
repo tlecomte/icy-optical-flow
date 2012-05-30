@@ -19,8 +19,8 @@
 
 package plugins.tlecomte.opticalflow_Horn_Schunck;
 
-import plugins.tlecomte.fem.Element;
-import plugins.tlecomte.fem.Node;
+import plugins.tlecomte.rectangularFEM.Element;
+import plugins.tlecomte.rectangularFEM.Node;
 
 public class StiffnessMatrix {
 	public static int build_A_HS_COO(int j,

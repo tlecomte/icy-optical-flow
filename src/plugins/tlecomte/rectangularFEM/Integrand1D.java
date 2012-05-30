@@ -17,18 +17,8 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.fem;
+package plugins.tlecomte.rectangularFEM;
 
-public class BilinearElement extends Element {
-	BilinearElement(int i, Node node0,
-			               Node node1,
-			               Node node2,
-			               Node node3) {
-		nodes = new Node[4];
-		index = i;
-		nodes[0] = node0;
-		nodes[1] = node1;
-		nodes[2] = node2;
-		nodes[3] = node3;
-	}
+public interface Integrand1D {
+	double function(double U);
 }

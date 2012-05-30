@@ -1,4 +1,4 @@
-package plugins.tlecomte.fem;
+package plugins.tlecomte.rectangularFEM;
 
 public abstract class Mesh {
 	// fields

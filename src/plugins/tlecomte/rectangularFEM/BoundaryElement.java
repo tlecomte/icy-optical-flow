@@ -17,8 +17,12 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.fem;
 
-public interface Integrand1D {
-	double function(double U);
+package plugins.tlecomte.rectangularFEM;
+
+public class BoundaryElement extends Element {
+	public int index;
+	public BoundaryNode[] nodes;
+	public double normalX;
+	public double normalY;
 }

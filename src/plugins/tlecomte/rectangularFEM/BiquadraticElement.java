@@ -17,15 +17,28 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
+package plugins.tlecomte.rectangularFEM;
 
-package plugins.tlecomte.fem;
-
-public class BoundaryNode {
-	public int index;
-	public Node gridNode;
-	
-	BoundaryNode(int i, Node gridNode) {
+public class BiquadraticElement extends Element {
+	BiquadraticElement(int i, Node node0,
+							  Node node1,
+							  Node node2,
+							  Node node3,
+							  Node node4,
+							  Node node5,
+							  Node node6,
+							  Node node7,
+							  Node node8) {
 		index = i;
-		this.gridNode = gridNode;
+		nodes = new Node[9];
+		nodes[0] = node0;
+		nodes[1] = node1;
+		nodes[2] = node2;
+		nodes[3] = node3;
+		nodes[4] = node4;
+		nodes[5] = node5;
+		nodes[6] = node6;
+		nodes[7] = node7;
+		nodes[8] = node8;
 	}
 }
