@@ -17,7 +17,7 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.opticalflow_Horn_Schunck;
+package plugins.tlecomte.opticalFlowHornSchunck;
 
 import icy.math.ArrayMath;
 import plugins.adufour.filtering.Kernels1D;

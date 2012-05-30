@@ -29,7 +29,7 @@
  * 
  */
 
-package plugins.tlecomte.opticalflow_Horn_Schunck;
+package plugins.tlecomte.opticalFlowHornSchunck;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
