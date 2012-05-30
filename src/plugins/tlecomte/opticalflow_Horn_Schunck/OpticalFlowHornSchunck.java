@@ -150,8 +150,8 @@ public class OpticalFlowHornSchunck extends EzPlug
 		
 		// display, additional
 		addEzComponent(axisButton);	
-		//axisButton.setToolTipText("Click here to display a reference image of the color code used" +
-		//	" to display the 2D flow.");
+		axisButton.setToolTipText(    "Click here to display a reference image of the color code used"
+									+ " to display the 2D flow.");
 	}
 	
 	@Override
