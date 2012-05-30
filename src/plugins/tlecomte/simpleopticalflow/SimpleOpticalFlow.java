@@ -170,13 +170,18 @@ public class SimpleOpticalFlow extends EzPlug
         // Check if sequence exists.
         if ( inputSequence == null )
         {
-                   MessageDialog.showDialog("Please open a sequence to use this plugin.", MessageDialog.WARNING_MESSAGE );
-                   return;
+        	MessageDialog.showDialog("Please open a sequence to use this plugin.", MessageDialog.ERROR_MESSAGE );
+			return;
         }
 
         int z = 0;
     	
     	int numT = inputSequence.getSizeT();
+    	
+    	if ( numT < 2 ) {
+    		MessageDialog.showDialog("The input sequence should have at least two successive images for the optical flow computation.", MessageDialog.ERROR_MESSAGE );
+            return;
+    	}
     	
     	// define empty sequences for the velocities maps.
     	Sequence uSequence = new Sequence();
