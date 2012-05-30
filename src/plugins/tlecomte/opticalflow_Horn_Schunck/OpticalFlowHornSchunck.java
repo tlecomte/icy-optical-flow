@@ -162,7 +162,9 @@ public class OpticalFlowHornSchunck extends EzPlug
 		// first clean previous executions (will detach the painters)
 		clean();
 		
-		super.getUI().setProgressBarMessage("Waiting...");
+		if (getUI() != null) {
+			getUI().setProgressBarMessage("Waiting...");
+		}
 		
         inputSequence = sequenceSelector.getValue();
         int channel = channelSelector.getValue();
@@ -170,8 +172,13 @@ public class OpticalFlowHornSchunck extends EzPlug
         // Check if sequence exists.
         if ( inputSequence == null )
         {
-        	MessageDialog.showDialog("Please open a sequence to use this plugin.", MessageDialog.ERROR_MESSAGE );
-			return;
+        	if (getUI() != null) {
+        		MessageDialog.showDialog("Please open a sequence to use this plugin.", MessageDialog.ERROR_MESSAGE );
+    			return;	
+        	} else {
+        		// FIXME figure out what to do when headless or in BLocks
+        		return;
+        	}
         }
 
         int z = 0;
@@ -179,8 +186,13 @@ public class OpticalFlowHornSchunck extends EzPlug
     	int numT = inputSequence.getSizeT();
     	
     	if ( numT < 2 ) {
-    		MessageDialog.showDialog("The input sequence should have at least two successive images for the optical flow computation.", MessageDialog.ERROR_MESSAGE );
-            return;
+    		if (getUI() != null) {
+    			MessageDialog.showDialog("The input sequence should have at least two successive images for the optical flow computation.", MessageDialog.ERROR_MESSAGE );
+    			return;
+    		} else {
+        		// FIXME figure out what to do when headless or in BLocks
+        		return;
+        	}
     	}
     	
     	// define empty sequences for the velocities maps.
@@ -228,7 +240,9 @@ public class OpticalFlowHornSchunck extends EzPlug
         	flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
         	flowPainter.update_flow_arrows(u1, u2, w , h, resolutionSelector.getValue());
         	
-        	getUI().setProgressBarValue((double) (t) / (double) (numT));
+        	if (getUI() != null) {
+        		getUI().setProgressBarValue((double) (t) / (double) (numT));
+        	}
     	}
     	
     	// compute a map of the velocity norm
@@ -240,12 +254,14 @@ public class OpticalFlowHornSchunck extends EzPlug
       	// compute a colored map of the velocity norm+angle, coded with hue and saturation
       	FlowMiddlebury uvColoredSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence, inputSequence.getName());
       	
-        // Create viewers to watch the velocities sequences.
-        //addSequence(uSequence);
-        //addSequence(vSequence);
-        addSequence(uvNormSequence);
-        //addSequence(uvAngleSequence);
-        addSequence(uvColoredSequence);
+      	if (getUI() != null) {
+            // Create viewers to watch the velocities sequences.
+            //addSequence(uSequence);
+            //addSequence(vSequence);
+            addSequence(uvNormSequence);
+            //addSequence(uvAngleSequence);
+            addSequence(uvColoredSequence);      		
+      	}
 		
         // add a painter to the sequence to draw the arrows
 		inputSequence.addPainter(flowPainter);
