@@ -17,7 +17,7 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.simpleopticalflow;
+package plugins.tlecomte.opticalflow_Horn_Schunck;
 
 import plugins.tlecomte.fem.Element;
 import plugins.tlecomte.fem.Node;

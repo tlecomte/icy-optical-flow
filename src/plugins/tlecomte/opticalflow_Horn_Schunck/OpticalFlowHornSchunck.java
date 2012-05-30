@@ -29,7 +29,7 @@
  * 
  */
 
-package plugins.tlecomte.simpleopticalflow;
+package plugins.tlecomte.opticalflow_Horn_Schunck;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,7 +45,7 @@ import plugins.tlecomte.flowdisplay.FlowMiddlebury;
 import plugins.tlecomte.flowdisplay.FlowNorm;
 import plugins.tlecomte.flowdisplay.VectorFlowPainter;
 
-public class SimpleOpticalFlow extends EzPlug
+public class OpticalFlowHornSchunck extends EzPlug
 {
 	public EzGroup inputGroup = new EzGroup("Input");
 	public EzVarSequence sequenceSelector = new EzVarSequence("Sequence");
