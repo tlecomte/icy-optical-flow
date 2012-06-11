@@ -217,9 +217,9 @@ public class VectorFlowPainter implements Painter {
 			
 	   		for ( FlowArrow flowarrow : currentImageArrowList )
 	   		{
-	   			if (hideZeroVelocities) 
-	   				if (flowarrow.norme < 0.3)
-	   					continue;
+	   			if (hideZeroVelocities && flowarrow.norme < 0.1) {
+	   				continue;
+	   			}
 
 	   			g2.setStroke(stroke);
 
