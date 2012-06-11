@@ -222,8 +222,8 @@ public class VectorFlowPainter implements Painter {
 	   			}
 
 	   			g2.setStroke(stroke);
-
 	   			g2.setColor( flowarrow.color );
+	   			
 	   			AffineTransform at = g2.getTransform();
 	   			
 	   			// handle the rotation
