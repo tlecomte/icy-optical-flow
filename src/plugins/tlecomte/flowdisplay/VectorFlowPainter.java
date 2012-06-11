@@ -39,6 +39,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -226,35 +227,32 @@ public class VectorFlowPainter implements Painter {
 
 	   			g2.setColor( flowarrow.color );
 	   			AffineTransform at = g2.getTransform();
+	   			
+	   			// handle the rotation
 	   			g2.translate( (int)flowarrow.x , (int)flowarrow.y );
 	   			g2.rotate( flowarrow.angle );
 	   			g2.translate( (int)-flowarrow.x , (int)-flowarrow.y );
 
-	   			Line2D l1 = new Line2D.Double(
-	   					flowarrow.x - flowarrow.norme / 2,
-	   					flowarrow.y , 
-	   					flowarrow.x - flowarrow.norme / 2 + flowarrow.norme ,
+	   			// line
+	   			Line2D l = new Line2D.Double(
+	   					flowarrow.x - flowarrow.norme/2,
+	   					flowarrow.y,
+	   					flowarrow.x + flowarrow.norme/2 - stroke.getLineWidth() * 0.25f,
 	   					flowarrow.y
 	   			);
 
-	   			Line2D l2 = new Line2D.Double(
-	   					flowarrow.x - flowarrow.norme / 2 + 3*flowarrow.norme / 4,
-	   					flowarrow.y + flowarrow.norme / 4,
-	   					flowarrow.x - flowarrow.norme / 2 + flowarrow.norme,
-	   					flowarrow.y
-	   			);
+	   			// arrow head
+	   			Path2D.Float path = new Path2D.Float();
+	   			path.moveTo(flowarrow.x - flowarrow.norme / 2 + 3*flowarrow.norme / 4,
+	   					flowarrow.y + flowarrow.norme / 4);
+	   			path.lineTo(flowarrow.x - flowarrow.norme / 2 + flowarrow.norme,
+	   					flowarrow.y);
+	   			path.lineTo(flowarrow.x - flowarrow.norme / 2 + 3*flowarrow.norme / 4 ,
+	   					flowarrow.y - flowarrow.norme / 4);
 
-	   			Line2D l3 = new Line2D.Double(
-	   					flowarrow.x - flowarrow.norme / 2 + 3*flowarrow.norme / 4 ,
-	   					flowarrow.y - flowarrow.norme / 4 ,
-	   					flowarrow.x - flowarrow.norme / 2 + flowarrow.norme ,
-	   					flowarrow.y 
-	   			);
-
-	   			g2.draw( l1 );
-	   			g2.draw( l2 );
-	   			g2.draw( l3 );
-	   			g2.setTransform( at );
+	   			g2.draw(l);
+	   			g2.draw(path);
+	   			g2.setTransform(at);
 	   		}
 		}
    	}
