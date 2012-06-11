@@ -208,7 +208,7 @@ public class VectorFlowPainter implements Painter {
 
    		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
    		//BasicStroke stroke = new BasicStroke((float) (minWidth + (maxWidth - minWidth)*flowarrow.norme/resolution));
-		BasicStroke stroke = new BasicStroke((float) 0.7);
+		BasicStroke stroke = new BasicStroke((float) 0.5);
 
 		t = Math.min(t, sequence.getSizeT() - 2); /* replicate flow on last image */
 		
