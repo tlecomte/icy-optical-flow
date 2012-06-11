@@ -132,20 +132,27 @@ public class VectorFlowPainter implements Painter {
 			}
 		}
 		
-		if ( max > 0 )
-		{
-			for (ArrayList<FlowArrow> currentImageArrowList : flowArrowList) {
-				for ( FlowArrow flowarrow : currentImageArrowList )
-				{					
-					double rapport =  resolution / max ;
-					flowarrow.norme *= rapport ;
-					flowarrow.vx *= rapport;
-					flowarrow.vy *= rapport;
+		if ( max == 0. ) {
+			max = 1;
+		}
 		
-					float norme1 = (float)flowarrow.norme / (float)resolution ;
-					// flowarrow.color = new Color( norme1 , 0f , 1f - norme1 ) ;
-					flowarrow.color = new Color( norme1 , 1f , 0f ) ;
-				}
+		double rapport =  resolution / max ;
+		
+		for (ArrayList<FlowArrow> currentImageArrowList : flowArrowList) {
+			for ( FlowArrow flowarrow : currentImageArrowList )
+			{					
+				flowarrow.norme *= rapport;
+				flowarrow.vx *= rapport;
+				flowarrow.vy *= rapport;
+	
+				double norme1 = flowarrow.norme/resolution;
+				// flowarrow.color = new Color( norme1 , 0f , 1f - norme1 );
+				flowarrow.color = new Color((float) norme1, 1f , 0f);
+				
+				// make the arrows more visible by doubling their length 
+				flowarrow.norme *= 2;
+				flowarrow.vx *= 2;
+				flowarrow.vy *= 2;					
 			}
 		}
 	}
@@ -202,7 +209,7 @@ public class VectorFlowPainter implements Painter {
 
    		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
    		//BasicStroke stroke = new BasicStroke((float) (minWidth + (maxWidth - minWidth)*flowarrow.norme/resolution));
-		BasicStroke stroke = new BasicStroke((float) 2.0);
+		BasicStroke stroke = new BasicStroke((float) 0.5);
 
 		t = Math.min(t, sequence.getSizeT() - 2); /* replicate flow on last image */
 		
