@@ -41,6 +41,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 import icy.canvas.IcyCanvas;
 import icy.gui.viewer.Viewer;
@@ -72,13 +73,14 @@ public class VectorFlowPainter implements Painter {
 	ArrayList<ArrayList<FlowArrow>> flowArrowList = new ArrayList<ArrayList<FlowArrow>>();
 	
 	boolean hideZeroVelocities = false;
+	int resolution = 1;
 	
     // clear the arrows list
 	public void clear() {
 		flowArrowList.clear();
 	}
 	
-	public void update_flow_arrows(double[] u, double[] v, int w, int h, int resolution) {
+	public void update_flow_arrows(double[] u, double[] v, int w, int h) {
    		/* resolution is the number of pixels for the square containing the arrow */
     	
    		ArrayList<FlowArrow> currentImageArrowList = new ArrayList<FlowArrow>();
@@ -115,34 +117,45 @@ public class VectorFlowPainter implements Painter {
 			flowarrow.angle = Math.atan2( flowarrow.vy , flowarrow.vx );
 		}
 
-		// normalize
-		double max = 0;
-		for ( FlowArrow flowarrow : currentImageArrowList )
-		{					
-			if ( flowarrow.norme > max ) max = flowarrow.norme ;
-		}				
-
-		if ( max > 0 )
-		{
-			for ( FlowArrow flowarrow : currentImageArrowList )
-			{					
-				double rapport =  resolution / max ;
-				flowarrow.norme *= rapport ;
-				flowarrow.vx *= rapport;
-				flowarrow.vy *= rapport;
-
-				float norme1 = (float)flowarrow.norme / (float)resolution ;
-				// flowarrow.color = new Color( norme1 , 0f , 1f - norme1 ) ;
-				flowarrow.color = new Color( norme1 , 1f , 0f ) ;
-			}
-		}
-		
 		// add the current arrow map to the global list
 		flowArrowList.add( currentImageArrowList );
 	}
 	
+	public void normalize() {	
+		// normalize
+		double max = 0;
+		for (ArrayList<FlowArrow> currentImageArrowList : flowArrowList) {
+			for ( FlowArrow flowarrow : currentImageArrowList ) {					
+				if ( flowarrow.norme > max ) {
+					max = flowarrow.norme ;
+				}
+			}
+		}
+		
+		if ( max > 0 )
+		{
+			for (ArrayList<FlowArrow> currentImageArrowList : flowArrowList) {
+				for ( FlowArrow flowarrow : currentImageArrowList )
+				{					
+					double rapport =  resolution / max ;
+					flowarrow.norme *= rapport ;
+					flowarrow.vx *= rapport;
+					flowarrow.vy *= rapport;
+		
+					float norme1 = (float)flowarrow.norme / (float)resolution ;
+					// flowarrow.color = new Color( norme1 , 0f , 1f - norme1 ) ;
+					flowarrow.color = new Color( norme1 , 1f , 0f ) ;
+				}
+			}
+		}
+	}
+	
 	public void hideZeroVelocities(boolean hide) {
 		hideZeroVelocities = hide;
+	}
+	
+	public void setResolution(int resolution) {
+		this.resolution = resolution;
 	}
 	
    	@Override

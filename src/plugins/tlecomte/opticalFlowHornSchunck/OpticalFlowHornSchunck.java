@@ -203,6 +203,8 @@ public class OpticalFlowHornSchunck extends EzPlug
         
         // clear the arrows list
 		flowPainter.clear();
+    	flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
+    	flowPainter.setResolution(resolutionSelector.getValue());
         
     	for (int t = 0; t<numT-1; t++) {
     		// get frames
@@ -237,13 +239,14 @@ public class OpticalFlowHornSchunck extends EzPlug
         	// store the results
         	add_velocities_maps_to_sequences(u1, u2, w, h, uSequence, vSequence);
         	
-        	flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
-        	flowPainter.update_flow_arrows(u1, u2, w , h, resolutionSelector.getValue());
+        	flowPainter.update_flow_arrows(u1, u2, w , h);
         	
         	if (getUI() != null) {
         		getUI().setProgressBarValue((double) (t) / (double) (numT));
         	}
     	}
+    	
+    	flowPainter.normalize();
     	
     	// compute a map of the velocity norm
       	FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence, inputSequence.getName());
