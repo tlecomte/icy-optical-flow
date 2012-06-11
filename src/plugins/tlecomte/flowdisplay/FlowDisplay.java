@@ -14,8 +14,6 @@ public class FlowDisplay extends EzPlug {
 	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows");
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
 	
-	VectorFlowPainter flowPainter = new VectorFlowPainter();
-	
 	Sequence uxSequence = null;
 	Sequence uySequence = null;
 	Sequence coverSequence = null;
@@ -45,11 +43,7 @@ public class FlowDisplay extends EzPlug {
 	}
 	
 	protected void execute() {
-		// remove painter from previous sequence
-   		if (coverSequence != null) {
-   			coverSequence.removePainter(flowPainter);
-   			coverSequence = null;	
-   		}
+		VectorFlowPainter flowPainter = new VectorFlowPainter();
 		
 		uxSequence = uxSequenceSelector.getValue();
 		uySequence = uySequenceSelector.getValue();
@@ -80,10 +74,5 @@ public class FlowDisplay extends EzPlug {
 	}
 
 	public void clean() {
-		// remove painter from sequence
-   		if (coverSequence != null) {
-   			coverSequence.removePainter(flowPainter);
-   			coverSequence = null;	
-   		}
 	}
 }
