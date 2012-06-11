@@ -195,7 +195,6 @@ public class VectorFlowPainter implements Painter {
 
    	@Override
    	public void paint(Graphics2D g2, Sequence sequence, IcyCanvas canvas) {
-   		//int resolution = resolutionSelector.getValue();		
    		//float maxWidth= 4;
    		//float minWidth= 1;
 
