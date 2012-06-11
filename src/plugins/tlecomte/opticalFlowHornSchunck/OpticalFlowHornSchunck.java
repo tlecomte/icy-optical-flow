@@ -246,8 +246,6 @@ public class OpticalFlowHornSchunck extends EzPlug
         	}
     	}
     	
-    	flowPainter.normalize();
-    	
     	// compute a map of the velocity norm
       	FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence, inputSequence.getName());
       	
@@ -267,6 +265,7 @@ public class OpticalFlowHornSchunck extends EzPlug
       	}
 		
         // add a painter to the sequence to draw the arrows
+      	flowPainter.normalize();
 		inputSequence.addPainter(flowPainter);
     }
 	
