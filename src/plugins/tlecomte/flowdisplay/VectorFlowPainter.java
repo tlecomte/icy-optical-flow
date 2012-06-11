@@ -42,7 +42,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import icy.canvas.IcyCanvas;
 import icy.gui.viewer.Viewer;
