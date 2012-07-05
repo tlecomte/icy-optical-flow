@@ -1,5 +1,7 @@
 package plugins.tlecomte.flowdisplay;
 
+import icy.gui.dialog.ConfirmDialog;
+import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.type.collection.array.Array1DUtil;
 import plugins.adufour.ezplug.EzPlug;
@@ -49,22 +51,59 @@ public class FlowDisplay extends EzPlug {
 		uySequence = uySequenceSelector.getValue();
 		coverSequence = coverSequenceSelector.getValue();
 		
+        // Check if sequence exists.
+        if ( (uxSequence == null)
+        		|| (uySequence == null)
+        		|| (coverSequence == null))
+        {
+    		MessageDialog.showDialog("Please open three sequences to use this plugin.", MessageDialog.ERROR_MESSAGE );
+    		return;
+        }
+		
 		int w = uxSequence.getSizeX();
     	int h = uxSequence.getSizeY();
 		int numT = uxSequence.getSizeT();
+		int coverNumT = coverSequence.getSizeT();
 		int z = 0;
 		int channel = 0;
+		
+		if ((w != uySequence.getSizeX())
+				|| (h != uySequence.getSizeY())
+				|| (numT != uySequence.getSizeT())
+				|| ((numT != coverNumT) && (numT + 1 != coverNumT))) {
+			MessageDialog.showDialog("Sequences sizes are not compatible.", MessageDialog.ERROR_MESSAGE );
+			return;
+		}
+		
+		if ((w != coverSequence.getSizeX())
+				|| (h != coverSequence.getSizeY())) {
+			boolean ret = ConfirmDialog.confirm("Sizes of flow and cover sequences are different, are you sure you want to continue ?");
+			if (!ret) {
+				return;
+			}
+		}
 		
 		flowPainter.clear();
 		flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
 		flowPainter.setResolution(resolutionSelector.getValue());
 		
-		for (int t = 0; t<numT-1; t++) {
+		for (int t = 0; t<numT; t++) {
 			// Get a a direct reference to the data as doubles.
 			double[] ux = Array1DUtil.arrayToDoubleArray(uxSequence.getDataXY(t, z, channel), uxSequence.isSignedDataType());
 			double[] uy = Array1DUtil.arrayToDoubleArray(uySequence.getDataXY(t, z, channel), uySequence.isSignedDataType());
 			
 			flowPainter.update_flow_arrows(ux, uy, w, h);
+		}
+		
+		// usually the flow sequences have one less time step than the input sequence
+		// if it is the case, we replicate the last flow image at the end
+		if (numT == coverNumT - 1) {
+			int t = numT - 1;
+			// Get a a direct reference to the data as doubles.
+			double[] ux = Array1DUtil.arrayToDoubleArray(uxSequence.getDataXY(t, z, channel), uxSequence.isSignedDataType());
+			double[] uy = Array1DUtil.arrayToDoubleArray(uySequence.getDataXY(t, z, channel), uySequence.isSignedDataType());
+			
+			flowPainter.update_flow_arrows(ux, uy, w, h);			
 		}
 		
 		flowPainter.normalize();
