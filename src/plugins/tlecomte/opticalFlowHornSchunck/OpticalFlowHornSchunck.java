@@ -187,7 +187,11 @@ public class OpticalFlowHornSchunck extends EzPlug
     	
     	if ( numT < 2 ) {
     		if (getUI() != null) {
-    			MessageDialog.showDialog("The input sequence should have at least two successive images for the optical flow computation.", MessageDialog.ERROR_MESSAGE );
+    			MessageDialog.showDialog("The input sequence should have at least two successive images\n"
+    					+ "for the optical flow computation.\n\n"
+    					+ "Note: If you want to compute the optical flow on a z-stack,\n"
+    					+ "first convert it to a time sequence\n"
+    					+ "(\"Sequence / Image operation\" -> \"Convert to time\").", MessageDialog.ERROR_MESSAGE );
     			return;
     		} else {
         		// FIXME figure out what to do when headless or in BLocks
