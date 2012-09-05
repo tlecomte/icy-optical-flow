@@ -15,7 +15,7 @@ public class FlowDisplay extends EzPlug implements Block {
 	public EzVarSequence uxSequenceSelector = new EzVarSequence("ux Sequence");
 	public EzVarSequence uySequenceSelector = new EzVarSequence("uy Sequence");
 	public EzVarSequence coverSequenceSelector = new EzVarSequence("Cover Sequence");
-	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows", 10, 1, 100000, 1);
+	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows", 10, 1, Integer.MAX_VALUE, 1);
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", true);
 	
 	Sequence uxSequence = null;
