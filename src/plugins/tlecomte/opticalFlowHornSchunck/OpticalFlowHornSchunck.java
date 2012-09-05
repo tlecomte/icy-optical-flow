@@ -63,6 +63,10 @@ public class OpticalFlowHornSchunck extends EzPlug
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
 	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows");
 	
+	public EzGroup outputGroup = new EzGroup("Output options");
+	public EzVarBoolean flowMapSelector = new EzVarBoolean("Horizontal and vertical flows", false);
+	public EzVarBoolean flowNormSelector = new EzVarBoolean("Flow norm", true);
+	public EzVarBoolean colorFlowSelector = new EzVarBoolean("Color-coded flow", true);
 	public EzButton axisButton;
 	
 	public Sequence inputSequence = null;
@@ -148,10 +152,21 @@ public class OpticalFlowHornSchunck extends EzPlug
 		displayGroup.addEzComponent(resolutionSelector, hideZeroVelocitiesSelector);
 		addEzComponent(displayGroup);
 		
-		// display, additional
+		// output
+		addEzComponent(flowMapSelector);
+		flowMapSelector.setToolTipText(  "<html>Will output two sequences with the horizontal and<br>"
+									   + "vertical displacements, respectively.</html>");
+		addEzComponent(flowNormSelector);
+		flowNormSelector.setToolTipText(  "<html>Will output a sequence with the norm of the flow.</html>");
+		addEzComponent(colorFlowSelector);
+		colorFlowSelector.setToolTipText(  "<html>Will output a sequence where the flow is displayed<br>"
+				   						 + "with the Middlebury color-code.</html>");
 		addEzComponent(axisButton);	
 		axisButton.setToolTipText(    "Click here to display a reference image of the color code used"
 									+ " to display the 2D flow.");
+		outputGroup.addEzComponent(flowMapSelector, flowNormSelector, colorFlowSelector, axisButton);
+
+		addEzComponent(outputGroup);
 	}
 	
 	@Override
@@ -202,8 +217,8 @@ public class OpticalFlowHornSchunck extends EzPlug
     	// define empty sequences for the velocities maps.
     	Sequence uSequence = new Sequence();
     	Sequence vSequence = new Sequence();
-        uSequence.setName("u velocities");
-        vSequence.setName("v velocities");
+        uSequence.setName("Horizontal flow");
+        vSequence.setName("Vertical flow");
         
         // clear the arrows list
 		flowPainter.clear();
@@ -261,11 +276,16 @@ public class OpticalFlowHornSchunck extends EzPlug
       	
       	if (getUI() != null) {
             // Create viewers to watch the velocities sequences.
-            //addSequence(uSequence);
-            //addSequence(vSequence);
-            addSequence(uvNormSequence);
-            //addSequence(uvAngleSequence);
-            addSequence(uvColoredSequence);      		
+      		if (flowMapSelector.getValue()) {
+      			addSequence(uSequence);
+                addSequence(vSequence);
+      		}
+            if (flowNormSelector.getValue()) {
+                addSequence(uvNormSequence);	
+            }
+            if (colorFlowSelector.getValue()) {
+                addSequence(uvColoredSequence);            	
+            }
       	}
 		
         // add a painter to the sequence to draw the arrows
