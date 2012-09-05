@@ -12,7 +12,6 @@ import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.adufour.vars.lang.VarSequence;
 import plugins.tlecomte.flowdisplay.FlowAngle;
-import plugins.tlecomte.flowdisplay.FlowMiddlebury;
 import plugins.tlecomte.flowdisplay.FlowNorm;
 
 public class MiddleburyColorCoder extends EzPlug implements Block {

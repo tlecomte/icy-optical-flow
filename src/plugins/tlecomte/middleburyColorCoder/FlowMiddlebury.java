@@ -17,8 +17,10 @@
  * along with ICY. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package plugins.tlecomte.flowdisplay;
+package plugins.tlecomte.middleburyColorCoder;
 
+import plugins.tlecomte.flowdisplay.FlowAngle;
+import plugins.tlecomte.flowdisplay.FlowNorm;
 import icy.image.IcyBufferedImage;
 import icy.sequence.Sequence;
 import icy.type.DataType;

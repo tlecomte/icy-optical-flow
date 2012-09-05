@@ -45,9 +45,9 @@ import icy.type.collection.array.Array1DUtil;
 import icy.gui.dialog.MessageDialog;
 import icy.image.IcyBufferedImage;
 import plugins.tlecomte.flowdisplay.FlowAngle;
-import plugins.tlecomte.flowdisplay.FlowMiddlebury;
 import plugins.tlecomte.flowdisplay.FlowNorm;
 import plugins.tlecomte.flowdisplay.VectorFlowPainter;
+import plugins.tlecomte.middleburyColorCoder.FlowMiddlebury;
 
 public class OpticalFlowHornSchunck extends EzPlug implements Block
 {
