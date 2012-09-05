@@ -4,26 +4,25 @@ import icy.gui.dialog.ConfirmDialog;
 import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.type.collection.array.Array1DUtil;
+import plugins.adufour.blocks.lang.Block;
+import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarInteger;
 import plugins.adufour.ezplug.EzVarSequence;
 
-public class FlowDisplay extends EzPlug {
+public class FlowDisplay extends EzPlug implements Block {
 	public EzVarSequence uxSequenceSelector = new EzVarSequence("ux Sequence");
 	public EzVarSequence uySequenceSelector = new EzVarSequence("uy Sequence");
 	public EzVarSequence coverSequenceSelector = new EzVarSequence("Cover Sequence");
-	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows");
-	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
+	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows", 10, 1, 100000, 1);
+	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", true);
 	
 	Sequence uxSequence = null;
 	Sequence uySequence = null;
 	Sequence coverSequence = null;
 	
 	protected void initialize() {
-		resolutionSelector.setValue(10);
-		hideZeroVelocitiesSelector.setValue(true);
-		
 		// sequence selection
 		addEzComponent(uxSequenceSelector);
 		uxSequenceSelector.setToolTipText("<html>Choose a sequence for the u_x flow.</html>");
@@ -42,6 +41,22 @@ public class FlowDisplay extends EzPlug {
 		//addEzComponent(axisButton);
 		//axisButton.setToolTipText(    "Click here to display a reference image of the color code used"
 		//							+ " to display the 2D flow.");	
+	}
+	
+	// declare ourself to Blocks
+	@Override
+	public void declareInput(VarList inputMap) {
+		inputMap.add(uxSequenceSelector.getVariable());
+		inputMap.add(uySequenceSelector.getVariable());
+		inputMap.add(coverSequenceSelector.getVariable());
+		inputMap.add(resolutionSelector.getVariable());
+		inputMap.add(hideZeroVelocitiesSelector.getVariable());
+	}
+
+	// declare ourself to Blocks
+	@Override
+	public void declareOutput(VarList outputMap) {
+		// we have no output, the block adds a painter to the cover sequence
 	}
 	
 	protected void execute() {
