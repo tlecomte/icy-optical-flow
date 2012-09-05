@@ -109,7 +109,7 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
 			@Override
 			public void actionPerformed(ActionEvent event) {
 		      	// compute a separate sequence to illustrate the color code
-		      	Sequence axisSequence = compute_coloredAxes();
+		      	Sequence axisSequence = FlowMiddlebury.coloredAxes();
 		        addSequence(axisSequence);
 			}
 		};
@@ -335,52 +335,6 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
         uSequence.setImage(uSequence.getSizeT(), 0 /*z*/, uImage);
         vSequence.setImage(vSequence.getSizeT(), 0 /*z*/, vImage);
 	}
-	
-	Sequence compute_coloredAxes() {
-		Sequence uSequence = new Sequence();
-		Sequence vSequence = new Sequence();
-		
-        // create the image object
-		int w = 100;
-		int h = w;
-        IcyBufferedImage uImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-        IcyBufferedImage vImage = new IcyBufferedImage(w, h, 1, DataType.getDataType("double"));
-        Object uImageData = uImage.getDataXY(0);
-        Object vImageData = vImage.getDataXY(0);
-
-        double[] u = new double[w*h];
-        double[] v = new double[w*h];
-        
-        for (int i=0; i<w; i++) {
-        	for (int j=0; j<h; j++) {
-        		u[j*w + i] = i - w/2;
-        		v[j*w + i] = j - h/2;
-        	}
-        }
-        
-		Array1DUtil.doubleArrayToArray(u, uImageData);
-		Array1DUtil.doubleArrayToArray(v, vImageData);
-		
-        // notify to icy that data has changed to refresh internal state and display
-        uImage.dataChanged();
-        vImage.dataChanged();
-
-        // add the new images to the sequences at a new time point
-        uSequence.setImage(uSequence.getSizeT(), 0 /*z*/, uImage);
-        vSequence.setImage(vSequence.getSizeT(), 0 /*z*/, vImage);
-               
-		FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence, "Reference");
-      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence, "Reference");
-      	FlowMiddlebury axisSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence, "Reference");
-      	
-      	// ask Icy core not to distort the colors
-      	for (int i=0; i<3; i++) {
-      		axisSequence.setAutoUpdateChannelBounds(false);
-      		axisSequence.getColorModel().setComponentUserMinValue(i, 0.);
-      	}
-      	
-      	return axisSequence;
-	}  
 
    	public double getDistance( double x1 , double y1 , double z1 , double x2 , double y2 , double z2 )
    	{
