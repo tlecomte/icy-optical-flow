@@ -52,16 +52,16 @@ public class OpticalFlowHornSchunck extends EzPlug
 	public EzVarInteger	channelSelector	= new EzVarInteger("Channel");
 	
 	public EzGroup modelGroup = new EzGroup("Flow parameters");
-	public EzVarDouble alphaSelector = new EzVarDouble("Regularization parameter");
+	public EzVarDouble alphaSelector = new EzVarDouble("Regularization parameter", 100000., 0., Double.MAX_VALUE, 10000.);
 	
 	public EzGroup computationGroup = new EzGroup("Computation parameters");
 	Double[] values = {1E-2, 1E-3, 1E-4, 1E-5, 1E-6, 1E-7, 1E-8, 1E-9, 1E-10};
 	public EzVarDouble epsilonSelector = new EzVarDouble("Tolerance before termination", values, 2 /* default index */, false /*allowUserInput*/);
-	public EzVarInteger	iterSelector = new EzVarInteger("Maximum number of iterations");
+	public EzVarInteger	iterSelector = new EzVarInteger("Maximum number of iterations", 10000, 1, Integer.MAX_VALUE, 1000);
 	
 	public EzGroup displayGroup = new EzGroup("Display options for the vector flow overlay");
-	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", false);
-	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows");
+	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", true);
+	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows", 10, 1, Integer.MAX_VALUE, 1);
 	
 	public EzGroup outputGroup = new EzGroup("Output options");
 	public EzVarBoolean flowMapSelector = new EzVarBoolean("Horizontal and vertical flows", false);
@@ -76,11 +76,6 @@ public class OpticalFlowHornSchunck extends EzPlug
 	@Override
 	protected void initialize()
 	{
-		resolutionSelector.setValue(10);
-		alphaSelector.setValue(100000.);
-		iterSelector.setValue(10000);
-		hideZeroVelocitiesSelector.setValue(true);
-		
 		EzVarListener<Sequence> sequenceListener = new EzVarListener<Sequence>()
 		{
 			@Override
