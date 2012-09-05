@@ -34,7 +34,11 @@ package plugins.tlecomte.opticalFlowHornSchunck;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+
+import plugins.adufour.blocks.lang.Block;
+import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.*;
+import plugins.adufour.vars.lang.VarSequence;
 import icy.sequence.Sequence;
 import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
@@ -45,7 +49,7 @@ import plugins.tlecomte.flowdisplay.FlowMiddlebury;
 import plugins.tlecomte.flowdisplay.FlowNorm;
 import plugins.tlecomte.flowdisplay.VectorFlowPainter;
 
-public class OpticalFlowHornSchunck extends EzPlug
+public class OpticalFlowHornSchunck extends EzPlug implements Block
 {
 	public EzGroup inputGroup = new EzGroup("Input");
 	public EzVarSequence sequenceSelector = new EzVarSequence("Sequence");
@@ -72,6 +76,9 @@ public class OpticalFlowHornSchunck extends EzPlug
 	public Sequence inputSequence = null;
 	
 	VectorFlowPainter flowPainter = new VectorFlowPainter();
+	
+	VarSequence uSequenceVar = new VarSequence("Horizontal flow", null);
+	VarSequence vSequenceVar = new VarSequence("Vertical flow", null);
 	
 	@Override
 	protected void initialize()
@@ -164,6 +171,23 @@ public class OpticalFlowHornSchunck extends EzPlug
 		addEzComponent(outputGroup);
 	}
 	
+	// declare ourself to Blocks
+	@Override
+	public void declareInput(VarList inputMap) {
+		inputMap.add(sequenceSelector.getVariable());
+		inputMap.add(channelSelector.getVariable());
+		inputMap.add(alphaSelector.getVariable());
+		inputMap.add(epsilonSelector.getVariable());
+		inputMap.add(iterSelector.getVariable());
+	}
+
+	// declare ourself to Blocks
+	@Override
+	public void declareOutput(VarList outputMap) {
+		outputMap.add(uSequenceVar);
+		outputMap.add(vSequenceVar);
+	}
+	
 	@Override
 	protected void execute()
 	{
@@ -215,10 +239,12 @@ public class OpticalFlowHornSchunck extends EzPlug
         uSequence.setName("Horizontal flow");
         vSequence.setName("Vertical flow");
         
-        // clear the arrows list
-		flowPainter.clear();
-    	flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
-    	flowPainter.setResolution(resolutionSelector.getValue());
+        if (getUI() != null) {
+	        // clear the arrows list
+			flowPainter.clear();
+	    	flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
+	    	flowPainter.setResolution(resolutionSelector.getValue());
+        }
         
     	for (int t = 0; t<numT-1; t++) {
     		// get frames
@@ -252,24 +278,28 @@ public class OpticalFlowHornSchunck extends EzPlug
         	
         	// store the results
         	add_velocities_maps_to_sequences(u1, u2, w, h, uSequence, vSequence);
-        	
-        	flowPainter.update_flow_arrows(u1, u2, w , h);
-        	
+        	     	
         	if (getUI() != null) {
+            	flowPainter.update_flow_arrows(u1, u2, w , h);
         		getUI().setProgressBarValue((double) (t) / (double) (numT));
         	}
     	}
     	
-    	// compute a map of the velocity norm
-      	FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence, inputSequence.getName());
-      	
-      	// compute a map of the velocity angle
-      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence, inputSequence.getName());
-      	
-      	// compute a colored map of the velocity norm+angle, coded with hue and saturation
-      	FlowMiddlebury uvColoredSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence, inputSequence.getName());
-      	
+    	// assign the vars that are used by the Blocks interface
+    	uSequenceVar.setValue(uSequence);
+    	vSequenceVar.setValue(vSequence);
+    	
+    	// here goes the non-Block outputs
       	if (getUI() != null) {
+	    	// compute a map of the velocity norm
+	      	FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence, inputSequence.getName());
+	      	
+	      	// compute a map of the velocity angle
+	      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence, inputSequence.getName());
+	      	
+	      	// compute a colored map of the velocity norm+angle, coded with hue and saturation
+	      	FlowMiddlebury uvColoredSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence, inputSequence.getName());
+	      	
             // Create viewers to watch the velocities sequences.
       		if (flowMapSelector.getValue()) {
       			addSequence(uSequence);
@@ -281,11 +311,11 @@ public class OpticalFlowHornSchunck extends EzPlug
             if (colorFlowSelector.getValue()) {
                 addSequence(uvColoredSequence);            	
             }
+
+            // add a painter to the sequence to draw the arrows
+          	flowPainter.normalize();
+    		inputSequence.addPainter(flowPainter);
       	}
-		
-        // add a painter to the sequence to draw the arrows
-      	flowPainter.normalize();
-		inputSequence.addPainter(flowPainter);
     }
 	
 	void add_velocities_maps_to_sequences(double[] u, double[] v, int w, int h, Sequence uSequence, Sequence vSequence) {
