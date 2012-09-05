@@ -12,9 +12,9 @@ import plugins.adufour.ezplug.EzVarInteger;
 import plugins.adufour.ezplug.EzVarSequence;
 
 public class FlowDisplay extends EzPlug implements Block {
+	public EzVarSequence coverSequenceSelector = new EzVarSequence("Cover Sequence");
 	public EzVarSequence uxSequenceSelector = new EzVarSequence("ux Sequence");
 	public EzVarSequence uySequenceSelector = new EzVarSequence("uy Sequence");
-	public EzVarSequence coverSequenceSelector = new EzVarSequence("Cover Sequence");
 	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows", 10, 1, Integer.MAX_VALUE, 1);
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", true);
 	
@@ -24,12 +24,12 @@ public class FlowDisplay extends EzPlug implements Block {
 	
 	protected void initialize() {
 		// sequence selection
+		addEzComponent(coverSequenceSelector);
+		coverSequenceSelector.setToolTipText("<html>Choose a sequence where the flow will be displayed onto.</html>");
 		addEzComponent(uxSequenceSelector);
 		uxSequenceSelector.setToolTipText("<html>Choose a sequence for the u_x flow.</html>");
 		addEzComponent(uySequenceSelector);
 		uySequenceSelector.setToolTipText("<html>Choose a sequence for the u_y flow.</html>");
-		addEzComponent(coverSequenceSelector);
-		coverSequenceSelector.setToolTipText("<html>Choose a sequence where the flow will be displayed onto.</html>");
 		
 		// display
 		addEzComponent(resolutionSelector);
@@ -46,9 +46,9 @@ public class FlowDisplay extends EzPlug implements Block {
 	// declare ourself to Blocks
 	@Override
 	public void declareInput(VarList inputMap) {
+		inputMap.add(coverSequenceSelector.getVariable());
 		inputMap.add(uxSequenceSelector.getVariable());
 		inputMap.add(uySequenceSelector.getVariable());
-		inputMap.add(coverSequenceSelector.getVariable());
 		inputMap.add(resolutionSelector.getVariable());
 		inputMap.add(hideZeroVelocitiesSelector.getVariable());
 	}
@@ -61,10 +61,10 @@ public class FlowDisplay extends EzPlug implements Block {
 	
 	protected void execute() {
 		VectorFlowPainter flowPainter = new VectorFlowPainter();
-		
+
+		coverSequence = coverSequenceSelector.getValue();
 		uxSequence = uxSequenceSelector.getValue();
 		uySequence = uySequenceSelector.getValue();
-		coverSequence = coverSequenceSelector.getValue();
 		
         // Check if sequence exists.
         if ( (uxSequence == null)
