@@ -34,11 +34,13 @@ package plugins.tlecomte.opticalFlowHornSchunck;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.List;
 
 import plugins.adufour.blocks.lang.Block;
 import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.*;
 import plugins.adufour.vars.lang.VarSequence;
+import icy.painter.Painter;
 import icy.sequence.Sequence;
 import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
@@ -72,10 +74,6 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
 	public EzVarBoolean flowNormSelector = new EzVarBoolean("Flow norm", true);
 	public EzVarBoolean colorFlowSelector = new EzVarBoolean("Color-coded flow", true);
 	public EzButton axisButton;
-	
-	public Sequence inputSequence = null;
-	
-	VectorFlowPainter flowPainter = new VectorFlowPainter();
 	
 	VarSequence uSequenceVar = new VarSequence("Horizontal flow", null);
 	VarSequence vSequenceVar = new VarSequence("Vertical flow", null);
@@ -200,7 +198,7 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
 			getUI().setProgressBarMessage("Waiting...");
 		}
 		
-        inputSequence = sequenceSelector.getValue();
+        Sequence inputSequence = sequenceSelector.getValue();
         int channel = channelSelector.getValue();
         
         // Check if sequence exists.
@@ -239,9 +237,15 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
         uSequence.setName("Horizontal flow");
         vSequence.setName("Vertical flow");
         
+        VectorFlowPainter flowPainter = new VectorFlowPainter();
         if (getUI() != null) {
-	        // clear the arrows list
-			flowPainter.clear();
+        	// remove previous painters
+    		List<Painter> painters = inputSequence.getPainters(VectorFlowPainter.class);
+    		for (Painter painter : painters) {
+    			inputSequence.removePainter(painter);
+        		inputSequence.painterChanged(painter);
+    		}
+    		
 	    	flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
 	    	flowPainter.setResolution(resolutionSelector.getValue());
         }
@@ -346,9 +350,5 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
 	public void clean()
 	{
 		// use this method to clean local variables or input streams (if any) to avoid memory leaks
-   		if (inputSequence != null) {
-   			inputSequence.removePainter(flowPainter);
-   			inputSequence = null;	
-   		}
 	}
 }
