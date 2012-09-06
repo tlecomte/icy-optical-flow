@@ -22,10 +22,6 @@ public class FlowDisplay extends EzPlug implements Block {
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", true);
 	public EzVarBoolean removePreviousPaintersSelector = new EzVarBoolean("Remove previous flow painters", true);
 	
-	Sequence uxSequence = null;
-	Sequence uySequence = null;
-	Sequence coverSequence = null;
-	
 	protected void initialize() {
 		// sequence selection
 		addEzComponent(coverSequenceSelector);
@@ -65,9 +61,9 @@ public class FlowDisplay extends EzPlug implements Block {
 	protected void execute() {
 		VectorFlowPainter flowPainter = new VectorFlowPainter();
 
-		coverSequence = coverSequenceSelector.getValue();
-		uxSequence = uxSequenceSelector.getValue();
-		uySequence = uySequenceSelector.getValue();
+		Sequence coverSequence = coverSequenceSelector.getValue();
+		Sequence uxSequence = uxSequenceSelector.getValue();
+		Sequence uySequence = uySequenceSelector.getValue();
 		
         // Check if sequence exists.
         if ( (uxSequence == null)
