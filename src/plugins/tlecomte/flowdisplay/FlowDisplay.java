@@ -1,7 +1,10 @@
 package plugins.tlecomte.flowdisplay;
 
+import java.util.List;
+
 import icy.gui.dialog.ConfirmDialog;
 import icy.gui.dialog.MessageDialog;
+import icy.painter.Painter;
 import icy.sequence.Sequence;
 import icy.type.collection.array.Array1DUtil;
 import plugins.adufour.blocks.lang.Block;
@@ -17,6 +20,7 @@ public class FlowDisplay extends EzPlug implements Block {
 	public EzVarSequence uySequenceSelector = new EzVarSequence("uy Sequence");
 	public EzVarInteger	resolutionSelector = new EzVarInteger("Pixels between neighbour flow arrows", 10, 1, Integer.MAX_VALUE, 1);
 	public EzVarBoolean hideZeroVelocitiesSelector = new EzVarBoolean("Hide zero velocities", true);
+	public EzVarBoolean removePreviousPaintersSelector = new EzVarBoolean("Remove previous flow painters", true);
 	
 	Sequence uxSequence = null;
 	Sequence uySequence = null;
@@ -36,7 +40,10 @@ public class FlowDisplay extends EzPlug implements Block {
 		addEzComponent(hideZeroVelocitiesSelector);
 		hideZeroVelocitiesSelector.setToolTipText(  "<html>If checked, the very smaller flow vectors will not be<br>"
 												  + "displayed on top of the sequence, so that the visualization is clearer.</html>");
-		
+		addEzComponent(removePreviousPaintersSelector);
+		removePreviousPaintersSelector.setToolTipText(  "<html>If checked, the previous flow painters that are present on the sequence<br>"
+													  + "will be removed. Uncheck if you want to preserve them.</html>");
+
 		// display, additional
 		//addEzComponent(axisButton);
 		//axisButton.setToolTipText(    "Click here to display a reference image of the color code used"
@@ -51,6 +58,7 @@ public class FlowDisplay extends EzPlug implements Block {
 		inputMap.add(uySequenceSelector.getVariable());
 		inputMap.add(resolutionSelector.getVariable());
 		inputMap.add(hideZeroVelocitiesSelector.getVariable());
+		inputMap.add(removePreviousPaintersSelector.getVariable());
 	}
 
 	// declare ourself to Blocks
@@ -122,6 +130,15 @@ public class FlowDisplay extends EzPlug implements Block {
 		}
 		
 		flowPainter.normalize();
+		
+		if (removePreviousPaintersSelector.getValue()) {
+	    	// remove previous painters
+			List<Painter> painters = coverSequence.getPainters(VectorFlowPainter.class);
+			for (Painter painter : painters) {
+				coverSequence.removePainter(painter);
+				coverSequence.painterChanged(painter);
+			}			
+		}
 			
         // add a painter to the sequence to draw the arrows
 		coverSequence.addPainter(flowPainter);
