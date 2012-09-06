@@ -46,6 +46,8 @@ import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
 import icy.gui.dialog.MessageDialog;
 import icy.image.IcyBufferedImage;
+import icy.image.colormap.FireColorMap;
+import icy.image.colormap.JETColorMap;
 import plugins.tlecomte.flowdisplay.FlowAngle;
 import plugins.tlecomte.flowdisplay.FlowNorm;
 import plugins.tlecomte.flowdisplay.VectorFlowPainter;
@@ -289,6 +291,22 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
         	}
     	}
     	
+		// set a JET colormap and make the bounds symmetric
+		// so that the zero corresponds to the green at the center of the colormap
+		double[] bounds = uSequence.getChannelBounds(0);
+		double ext = Math.max(Math.abs(bounds[0]), Math.abs(bounds[1]));
+		uSequence.setAutoUpdateChannelBounds(false);
+		uSequence.getColorModel().setComponentUserBounds(0, -ext, ext);
+		
+		bounds = vSequence.getChannelBounds(0);
+		ext = Math.max(Math.abs(bounds[0]), Math.abs(bounds[1]));
+		vSequence.setAutoUpdateChannelBounds(false);
+		vSequence.getColorModel().setComponentUserBounds(0, -ext, ext);
+		
+		uSequence.getColorModel().setColormap(0, new JETColorMap());
+		vSequence.getColorModel().setColormap(0, new JETColorMap());
+    	
+    	
     	// assign the vars that are used by the Blocks interface
     	uSequenceVar.setValue(uSequence);
     	vSequenceVar.setValue(vSequence);
@@ -297,23 +315,23 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
       	if (getUI() != null) {
 	    	// compute a map of the velocity norm
 	      	FlowNorm uvNormSequence = new FlowNorm(uSequence, vSequence, inputSequence.getName());
-	      	
-	      	// compute a map of the velocity angle
-	      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence, inputSequence.getName());
-	      	
-	      	// compute a colored map of the velocity norm+angle, coded with hue and saturation
-	      	FlowMiddlebury uvColoredSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence, inputSequence.getName());
-	      	
+	      	      	     	
             // Create viewers to watch the velocities sequences.
-      		if (flowMapSelector.getValue()) {
+      		if (flowMapSelector.getValue()) {     			
       			addSequence(uSequence);
                 addSequence(vSequence);
       		}
             if (flowNormSelector.getValue()) {
-                addSequence(uvNormSequence);	
+    	      	uvNormSequence.getColorModel().setColormap(0, new FireColorMap());
+            	addSequence(uvNormSequence);	
             }
             if (colorFlowSelector.getValue()) {
-                addSequence(uvColoredSequence);            	
+    	      	// compute a map of the velocity angle
+    	      	FlowAngle uvAngleSequence = new FlowAngle(uSequence, vSequence, inputSequence.getName());
+
+            	// compute a colored map of the velocity norm+angle, coded with hue and saturation
+            	FlowMiddlebury uvColoredSequence = new FlowMiddlebury(uvNormSequence, uvAngleSequence, inputSequence.getName());
+            	addSequence(uvColoredSequence);
             }
 
             // add a painter to the sequence to draw the arrows
