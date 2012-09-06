@@ -43,11 +43,6 @@ public class FlowDisplay extends EzPlug implements Block {
 		addEzComponent(removePreviousPaintersSelector);
 		removePreviousPaintersSelector.setToolTipText(  "<html>If checked, the previous flow painters that are present on the sequence<br>"
 													  + "will be removed. Uncheck if you want to preserve them.</html>");
-
-		// display, additional
-		//addEzComponent(axisButton);
-		//axisButton.setToolTipText(    "Click here to display a reference image of the color code used"
-		//							+ " to display the 2D flow.");	
 	}
 	
 	// declare ourself to Blocks
