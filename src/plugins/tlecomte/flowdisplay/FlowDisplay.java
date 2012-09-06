@@ -124,11 +124,14 @@ public class FlowDisplay extends EzPlug implements Block {
 		
 		if (removePreviousPaintersSelector.getValue()) {
 	    	// remove previous painters
-			List<Painter> painters = coverSequence.getPainters(VectorFlowPainter.class);
-			for (Painter painter : painters) {
-				coverSequence.removePainter(painter);
-				coverSequence.painterChanged(painter);
-			}			
+    		List<Painter> painters = coverSequence.getPainters();
+    		//List<Painter> painters = coverSequence.getPainters(VectorFlowPainter.class);
+    		for (Painter painter : painters) {
+    			if (painter.getClass().isAssignableFrom(VectorFlowPainter.class)) {
+    				coverSequence.removePainter(painter);
+    				coverSequence.painterChanged(painter);    				
+    			}
+    		}		
 		}
 			
         // add a painter to the sequence to draw the arrows

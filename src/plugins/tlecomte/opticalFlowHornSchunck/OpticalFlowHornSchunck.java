@@ -242,10 +242,13 @@ public class OpticalFlowHornSchunck extends EzPlug implements Block
         VectorFlowPainter flowPainter = new VectorFlowPainter();
         if (getUI() != null) {
         	// remove previous painters
-    		List<Painter> painters = inputSequence.getPainters(VectorFlowPainter.class);
+    		List<Painter> painters = inputSequence.getPainters();
+    		//List<Painter> painters = inputSequence.getPainters(VectorFlowPainter.class);
     		for (Painter painter : painters) {
-    			inputSequence.removePainter(painter);
-        		inputSequence.painterChanged(painter);
+    			if (painter.getClass().isAssignableFrom(VectorFlowPainter.class)) {
+        			inputSequence.removePainter(painter);
+            		inputSequence.painterChanged(painter);    				
+    			}
     		}
     		
 	    	flowPainter.hideZeroVelocities(hideZeroVelocitiesSelector.getValue());
